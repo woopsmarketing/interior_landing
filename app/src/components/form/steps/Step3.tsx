@@ -6,6 +6,7 @@ import { FormData } from "../MultiStepForm";
 interface Step3Props {
   formData: FormData;
   onFileChange: (field: "spacePhoto" | "referenceImage", file: File | null) => void;
+  onSkip: () => void;
 }
 
 function FileUploadArea({
@@ -96,7 +97,7 @@ function FileUploadArea({
   );
 }
 
-export default function Step3({ formData, onFileChange }: Step3Props) {
+export default function Step3({ formData, onFileChange, onSkip }: Step3Props) {
   return (
     <div className="space-y-5">
       <div className="rounded-xl bg-orange-50 border border-orange-100 px-4 py-3.5">
@@ -129,6 +130,16 @@ export default function Step3({ formData, onFileChange }: Step3Props) {
             제공되는 이미지는 AI가 생성한 예시 이미지이며, 실제 시공 결과와는 차이가 있을 수 있습니다.
           </p>
         </div>
+      </div>
+
+      <div className="text-center">
+        <button
+          type="button"
+          onClick={onSkip}
+          className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          사진 없이 계속하기 →
+        </button>
       </div>
     </div>
   );

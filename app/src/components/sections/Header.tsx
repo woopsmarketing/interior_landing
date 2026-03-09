@@ -21,7 +21,7 @@ export default function Header() {
         {/* 로고 */}
         <a href="/" className="flex items-center gap-1.5">
           <span className="text-lg font-bold tracking-tight text-gray-900">
-            인테리어비교
+            인테리어<span className="text-orange-500">비교</span>
           </span>
         </a>
 

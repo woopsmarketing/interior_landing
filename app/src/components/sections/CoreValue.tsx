@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "motion/react";
 import { ListChecks, SlidersHorizontal, UserCheck } from "lucide-react";
 
@@ -27,13 +28,6 @@ const KEY_POINTS = [
 // ============================================================================
 
 export default function CoreValue() {
-  const handleCtaClick = () => {
-    const formSection = document.getElementById("form");
-    if (formSection) {
-      formSection.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   return (
     <section className="w-full bg-white px-5 py-20 sm:px-8 sm:py-24 lg:px-12">
       <div className="mx-auto max-w-5xl">
@@ -48,7 +42,7 @@ export default function CoreValue() {
             className="flex-1"
           >
             <h2 className="mb-6 text-2xl font-bold leading-snug text-gray-900 sm:text-3xl lg:text-4xl">
-              우리는 업체를 무작정 연결하는 것이 아니라,{" "}
+              💡 우리는 업체를 무작정 연결하는 것이 아니라,{" "}
               <br className="hidden sm:block" />
               먼저 당신의 조건을 정리합니다
             </h2>
@@ -61,12 +55,12 @@ export default function CoreValue() {
             </p>
 
             {/* CTA 버튼 */}
-            <button
-              onClick={handleCtaClick}
-              className="w-full rounded-full bg-orange-500 px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-orange-600 active:bg-orange-700 sm:w-auto sm:text-base"
+            <Link
+              href="/form"
+              className="w-full rounded-full bg-orange-500 px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-orange-600 active:bg-orange-700 sm:w-auto sm:text-base inline-block text-center"
             >
-              무료로 내 조건 전달하기
-            </button>
+              미리 인테리어 결과물 확인하기
+            </Link>
           </motion.div>
 
           {/* 우측: 숫자 강조 + 핵심 포인트 */}

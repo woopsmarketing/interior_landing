@@ -27,8 +27,5 @@ npm-debug.log*
 *.swp
 *.swo
 
-# Claude Code local settings (private)
-.claude/settings.local.json
-
 # OS
 Thumbs.db

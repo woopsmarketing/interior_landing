@@ -32,7 +32,7 @@ export default function WhoFor() {
           className="mb-10 text-center"
         >
           <h2 className="text-2xl font-bold leading-snug text-gray-900 sm:text-3xl lg:text-4xl">
-            이런 분들에게 특히 잘 맞습니다
+            🙋 이런 분들에게 특히 잘 맞습니다
           </h2>
         </motion.div>
 
@@ -79,10 +79,10 @@ export default function WhoFor() {
           className="mt-8 flex justify-center"
         >
           <a
-            href="#form"
+            href="/form"
             className="w-full rounded-full bg-orange-500 px-8 py-4 text-center text-sm font-semibold text-white transition-colors hover:bg-orange-600 active:bg-orange-700 sm:w-auto sm:text-base"
           >
-            무료로 내 조건 전달하기
+            무료 견적 요청하기
           </a>
         </motion.div>
       </div>

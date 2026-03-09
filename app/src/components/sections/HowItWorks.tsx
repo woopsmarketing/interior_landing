@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "motion/react";
 import {
   ClipboardList,
@@ -20,14 +21,17 @@ const STEPS = [
     description:
       "원하는 분위기, 예산, 시공 범위, 중요하게 생각하는 조건 등을 남겨주세요. 아직 완벽하게 정리되지 않았어도 괜찮습니다.",
     note: "공간 사진과 참고 이미지는 선택사항입니다.",
+    disclaimer: null,
   },
   {
     step: 2,
     icon: Sparkles,
     title: "요청 내용을 더 이해하기 쉽게 정리합니다",
     description:
-      "남겨주신 내용을 바탕으로 원하는 인테리어 방향과 핵심 니즈를 더 보기 쉽게 정리합니다.",
+      "남겨주신 내용을 바탕으로 서비스가 자동으로 인테리어 방향과 핵심 니즈를 정리합니다.",
     note: "사진과 참고 이미지를 함께 첨부한 경우 AI 예시 이미지도 제공될 수 있습니다.",
+    disclaimer:
+      "제공되는 이미지는 AI가 생성한 예시 이미지이며, 실제 시공 결과와는 차이가 있을 수 있습니다.",
   },
   {
     step: 3,
@@ -36,6 +40,7 @@ const STEPS = [
     description:
       "정리된 요청 내용을 바탕으로 전국 100개 이상의 등록 인테리어 업체가 견적과 작업 방향을 제안합니다.",
     note: null,
+    disclaimer: null,
   },
   {
     step: 4,
@@ -44,6 +49,7 @@ const STEPS = [
     description:
       "여러 업체의 견적과 제안을 비교한 뒤 고객이 원하는 업체를 직접 선택할 수 있습니다.",
     note: null,
+    disclaimer: null,
   },
 ] as const;
 
@@ -88,14 +94,10 @@ function StepCard({ item, index, isLast }: StepCardProps) {
       <h3 className="mb-3 text-base font-bold leading-snug text-gray-900 sm:text-lg">
         {item.title}
       </h3>
-      <p className="mb-2 text-sm leading-relaxed text-gray-500">
+      <p className="mb-3 text-base leading-relaxed text-gray-500">
         {item.description}
       </p>
 
-      {/* 보조 안내 문구 */}
-      {item.note && (
-        <p className="text-xs leading-relaxed text-gray-400">{item.note}</p>
-      )}
     </motion.div>
   );
 }
@@ -106,7 +108,10 @@ function StepCard({ item, index, isLast }: StepCardProps) {
 
 export default function HowItWorks() {
   return (
-    <section className="w-full bg-gray-50 px-5 py-20 sm:px-8 sm:py-24 lg:px-12">
+    <section
+      id="how-it-works"
+      className="w-full bg-gray-50 px-5 py-20 sm:px-8 sm:py-24 lg:px-12"
+    >
       <div className="mx-auto max-w-6xl">
         {/* 헤더 */}
         <motion.div
@@ -117,7 +122,7 @@ export default function HowItWorks() {
           className="mb-14 text-center"
         >
           <h2 className="mb-4 text-2xl font-bold leading-snug text-gray-900 sm:text-3xl lg:text-4xl">
-            복잡하게 알아보지 않아도,{" "}
+            📋 복잡하게 알아보지 않아도,{" "}
             <br className="hidden sm:block" />
             아래 순서대로 쉽게 시작할 수 있습니다
           </h2>
@@ -135,16 +140,21 @@ export default function HowItWorks() {
           ))}
         </div>
 
-        {/* AI 면책 문구 */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+        {/* 하단 텍스트 CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="mt-12 text-center text-xs leading-relaxed text-gray-400"
+          className="mt-12 text-center"
         >
-          제공되는 이미지는 AI가 생성한 예시 이미지이며, 실제 시공 결과와는 차이가 있을 수 있습니다.
-        </motion.p>
+          <Link
+            href="/form"
+            className="text-base font-semibold text-orange-500 hover:text-orange-600 transition-colors"
+          >
+            지금 시작하기 →
+          </Link>
+        </motion.div>
       </div>
     </section>
   );

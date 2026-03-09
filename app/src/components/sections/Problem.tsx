@@ -70,7 +70,7 @@ function ProblemCard({ card, index }: ProblemCardProps) {
       <h3 className="mb-3 text-lg font-bold leading-snug text-gray-900">
         {card.title}
       </h3>
-      <p className="text-sm leading-relaxed text-gray-500">{card.description}</p>
+      <p className="text-base leading-relaxed text-gray-500">{card.description}</p>
     </motion.div>
   );
 }
@@ -92,7 +92,7 @@ export default function Problem() {
           className="mb-12 text-center"
         >
           <h2 className="mb-5 text-2xl font-bold leading-snug text-gray-900 sm:text-3xl lg:text-4xl">
-            인테리어가 어려운 이유는,{" "}
+            😔 인테리어가 어려운 이유는,{" "}
             <br className="hidden sm:block" />
             하고 싶은 마음보다 걱정이 먼저 앞서기 때문입니다
           </h2>
@@ -110,6 +110,17 @@ export default function Problem() {
             <ProblemCard key={card.title} card={card} index={index} />
           ))}
         </div>
+
+        {/* 브리지 문구 */}
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-10 text-center text-lg font-semibold text-orange-500 sm:text-xl"
+        >
+          이 문제들, 혼자 해결하지 않아도 됩니다.
+        </motion.p>
       </div>
     </section>
   );

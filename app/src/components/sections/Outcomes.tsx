@@ -7,7 +7,7 @@ import { Eye, MessageCircle, Scale, Lightbulb } from "lucide-react";
 // 데이터
 // ============================================================================
 
-const OUTCOME_CARDS = [
+const OUTCOME_ITEMS = [
   {
     icon: Eye,
     iconColor: "text-orange-500",
@@ -45,31 +45,33 @@ const OUTCOME_CARDS = [
 // 서브 컴포넌트
 // ============================================================================
 
-interface OutcomeCardProps {
-  card: (typeof OUTCOME_CARDS)[number];
+interface OutcomeItemProps {
+  item: (typeof OUTCOME_ITEMS)[number];
   index: number;
 }
 
-function OutcomeCard({ card, index }: OutcomeCardProps) {
-  const Icon = card.icon;
+function OutcomeItem({ item, index }: OutcomeItemProps) {
+  const Icon = item.icon;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="flex flex-col rounded-2xl border border-gray-100 bg-white p-7 shadow-sm transition-shadow hover:shadow-md"
+      className="flex items-start gap-5 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
     >
       <div
-        className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl ${card.iconBg}`}
+        className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${item.iconBg}`}
       >
-        <Icon className={`h-7 w-7 ${card.iconColor}`} strokeWidth={1.8} />
+        <Icon className={`h-7 w-7 ${item.iconColor}`} strokeWidth={1.8} />
       </div>
-      <h3 className="mb-3 text-lg font-bold leading-snug text-gray-900">
-        {card.title}
-      </h3>
-      <p className="text-sm leading-relaxed text-gray-500">{card.description}</p>
+      <div>
+        <h3 className="mb-1.5 text-base font-bold leading-snug text-gray-900 sm:text-lg">
+          {item.title}
+        </h3>
+        <p className="text-base leading-relaxed text-gray-500">{item.description}</p>
+      </div>
     </motion.div>
   );
 }
@@ -80,8 +82,8 @@ function OutcomeCard({ card, index }: OutcomeCardProps) {
 
 export default function Outcomes() {
   return (
-    <section className="w-full bg-gray-50 px-5 py-20 sm:px-8 sm:py-24 lg:px-12">
-      <div className="mx-auto max-w-5xl">
+    <section className="w-full bg-white px-5 py-20 sm:px-8 sm:py-24 lg:px-12">
+      <div className="mx-auto max-w-3xl">
         {/* 헤더 */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -91,14 +93,14 @@ export default function Outcomes() {
           className="mb-12 text-center"
         >
           <h2 className="text-2xl font-bold leading-snug text-gray-900 sm:text-3xl lg:text-4xl">
-            이용하면 이런 점이 달라집니다
+            ✨ 이용하면 이런 점이 달라집니다
           </h2>
         </motion.div>
 
-        {/* 카드 2×2 그리드 */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          {OUTCOME_CARDS.map((card, index) => (
-            <OutcomeCard key={card.title} card={card} index={index} />
+        {/* Horizontal 카드 리스트 */}
+        <div className="flex flex-col gap-4">
+          {OUTCOME_ITEMS.map((item, index) => (
+            <OutcomeItem key={item.title} item={item} index={index} />
           ))}
         </div>
       </div>

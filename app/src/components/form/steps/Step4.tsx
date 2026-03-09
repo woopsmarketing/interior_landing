@@ -49,7 +49,16 @@ export default function Step4({ formData, onChange }: Step4Props) {
               <span className="text-orange-500">(필수)</span>
             </p>
             <p className="mt-0.5 text-xs text-gray-500">
-              이름, 연락처 등 입력하신 정보를 견적 요청 목적으로 수집합니다.
+              이름, 연락처 등 입력하신 정보를 견적 요청 목적으로 수집합니다.{" "}
+              <a
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-orange-500 underline hover:text-orange-600"
+              >
+                개인정보처리방침 보기
+              </a>
             </p>
           </div>
         </label>

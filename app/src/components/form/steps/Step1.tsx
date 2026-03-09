@@ -31,34 +31,6 @@ export default function Step1({ formData, onChange }: Step1Props) {
     <div className="space-y-5">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5">
-          이름 <span className="text-orange-500">*</span>
-        </label>
-        <input
-          type="text"
-          value={formData.name}
-          onChange={(e) => onChange("name", e.target.value)}
-          placeholder="홍길동"
-          required
-          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 transition-colors"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
-          연락처 <span className="text-orange-500">*</span>
-        </label>
-        <input
-          type="tel"
-          value={formData.phone}
-          onChange={(e) => onChange("phone", e.target.value)}
-          placeholder="010-0000-0000"
-          required
-          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 transition-colors"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
           지역 <span className="text-orange-500">*</span>
         </label>
         <select
@@ -102,6 +74,34 @@ export default function Step1({ formData, onChange }: Step1Props) {
             </label>
           ))}
         </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          이름 <span className="text-orange-500">*</span>
+        </label>
+        <input
+          type="text"
+          value={formData.name}
+          onChange={(e) => onChange("name", e.target.value)}
+          placeholder="홍길동"
+          required
+          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 transition-colors"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          연락처 <span className="text-orange-500">*</span>
+        </label>
+        <input
+          type="tel"
+          value={formData.phone}
+          onChange={(e) => onChange("phone", e.target.value)}
+          placeholder="010-0000-0000"
+          required
+          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 transition-colors"
+        />
       </div>
     </div>
   );
