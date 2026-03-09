@@ -1,14 +1,13 @@
 # Dependencies
-app/node_modules/
 node_modules/
 
 # Next.js build output
-app/.next/
-app/out/
+.next/
+out/
 
 # Next.js generated files
-app/next-env.d.ts
-app/tsconfig.tsbuildinfo
+next-env.d.ts
+tsconfig.tsbuildinfo
 
 # Logs
 *.log
