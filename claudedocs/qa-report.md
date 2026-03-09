@@ -1,4 +1,4 @@
-# QA Report — AI 인테리어 견적 비교 랜딩페이지
+# QA Report — AI 인테리어 견적 비교 랜딩페이지(수정)
 
 ## 2. 모바일 레이아웃 검수 (mobile-layout-checker)
 
