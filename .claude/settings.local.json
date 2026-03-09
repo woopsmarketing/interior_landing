@@ -1,15 +1,8 @@
 {
   "permissions": {
+    "defaultMode": "bypassPermissions",
     "allow": [
-      "Bash(npx create-next-app@latest:*)",
-      "mcp__monet-mcp__search_components",
-      "mcp__monet-mcp__get_component_code",
-      "Bash(npm install:*)",
-      "Bash(npx tsc:*)",
-      "Bash(\"D:/Documents/landing_interior/claudedocs/qa-report.md\":*)",
-      "Bash(npm run:*)",
-      "Bash(grep:*)",
-      "Bash(do:*)"
+      "Bash(*)"
     ]
   }
 }
