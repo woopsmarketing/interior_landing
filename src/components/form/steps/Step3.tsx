@@ -1,146 +1,217 @@
 "use client";
 
-import { useRef } from "react";
+import { useState } from "react";
 import { FormData } from "../MultiStepForm";
 
 interface Step3Props {
   formData: FormData;
-  onFileChange: (field: "spacePhoto" | "referenceImage", file: File | null) => void;
-  onSkip: () => void;
+  onMultiChange: (field: keyof FormData, value: string, checked: boolean) => void;
+  onChange: (field: keyof FormData, value: string) => void;
 }
 
-function FileUploadArea({
-  label,
-  hint,
-  file,
-  onFileChange,
+const PRIORITIES = [
+  "가성비",
+  "디자인",
+  "편의성",
+  "수납력",
+  "내구성",
+  "청소 편의성",
+  "채광",
+  "조명 분위기",
+  "방음",
+  "친환경 자재",
+  "반려동물 친화",
+  "아이 안전",
+  "공사 기간",
+  "유지관리",
+  "공간 활용도",
+];
+
+const STYLES = [
+  "미니멀",
+  "모던",
+  "내추럴",
+  "북유럽",
+  "호텔식",
+  "럭셔리",
+  "인더스트리얼",
+  "빈티지",
+  "한옥 감성",
+  "잘 모르겠음",
+];
+
+const ATMOSPHERES = [
+  "밝고 깨끗한",
+  "따뜻하고 아늑한",
+  "세련되고 도시적인",
+  "고급스럽고 묵직한",
+  "감성적이고 부드러운",
+  "오래 질리지 않는",
+];
+
+const PROBLEMS = [
+  "수납 부족",
+  "좁아 보임",
+  "동선 불편",
+  "조명 부족",
+  "주방 불편",
+  "욕실 낡음",
+  "소음 문제",
+  "콘센트 부족",
+  "공간 분리 안 됨",
+  "청소 불편",
+];
+
+function ChipCheckbox({
+  options,
+  selected,
+  fieldName,
+  onMultiChange,
 }: {
-  label: string;
-  hint: string;
-  file: File | null;
-  onFileChange: (file: File | null) => void;
+  options: string[];
+  selected: string[];
+  fieldName: keyof FormData;
+  onMultiChange: (field: keyof FormData, value: string, checked: boolean) => void;
 }) {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleClick = () => {
-    inputRef.current?.click();
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0] ?? null;
-    onFileChange(selected);
-  };
-
-  const handleRemove = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onFileChange(null);
-    if (inputRef.current) {
-      inputRef.current.value = "";
-    }
-  };
-
   return (
-    <div>
-      <div className="flex items-baseline justify-between mb-1.5">
-        <label className="text-sm font-medium text-gray-700">{label}</label>
-        <span className="text-xs text-gray-400">선택사항</span>
-      </div>
-      <div
-        onClick={handleClick}
-        className={`relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-7 cursor-pointer transition-colors ${
-          file
-            ? "border-orange-300 bg-orange-50/60"
-            : "border-gray-200 bg-gray-50 hover:border-orange-200 hover:bg-orange-50/30"
-        }`}
-      >
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleChange}
-          className="sr-only"
-        />
-        {file ? (
-          <div className="flex w-full items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-100">
-              <svg className="h-5 w-5 text-orange-500" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 5 2-3 3 6z" clipRule="evenodd" />
+    <div className="flex flex-wrap gap-2">
+      {options.map((option) => {
+        const isChecked = selected.includes(option);
+        return (
+          <label
+            key={option}
+            className={`flex cursor-pointer items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all ${
+              isChecked
+                ? "border-orange-400 bg-orange-50 text-orange-600"
+                : "border-gray-200 bg-white text-gray-600 hover:border-orange-200 hover:bg-orange-50/50"
+            }`}
+          >
+            <input
+              type="checkbox"
+              checked={isChecked}
+              onChange={(e) => onMultiChange(fieldName, option, e.target.checked)}
+              className="sr-only"
+            />
+            {isChecked && (
+              <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 14 14" fill="none">
+                <path
+                  d="M2.5 7L5.5 10L11.5 4"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="truncate text-sm font-medium text-gray-800">{file.name}</p>
-              <p className="text-xs text-gray-400">{(file.size / 1024).toFixed(0)} KB</p>
-            </div>
-            <button
-              type="button"
-              onClick={handleRemove}
-              className="shrink-0 rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
-            >
-              <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none">
-                <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-              </svg>
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-              <svg className="h-6 w-6 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-              </svg>
-            </div>
-            <p className="text-sm font-medium text-gray-600">클릭하여 파일 선택</p>
-            <p className="mt-1 text-xs text-gray-400">{hint}</p>
-          </>
-        )}
-      </div>
+            )}
+            {option}
+          </label>
+        );
+      })}
     </div>
   );
 }
 
-export default function Step3({ formData, onFileChange, onSkip }: Step3Props) {
+export default function Step3({ formData, onMultiChange, onChange }: Step3Props) {
+  const [showExtra, setShowExtra] = useState(false);
+
   return (
     <div className="space-y-5">
-      <div className="rounded-xl bg-orange-50 border border-orange-100 px-4 py-3.5">
-        <p className="text-sm text-orange-800 leading-relaxed">
-          사진을 첨부해주시면 요청 내용을 더 구체적으로 정리할 수 있으며,
-          AI 예시 이미지 제공에도 도움이 됩니다.
-        </p>
-      </div>
-
-      <FileUploadArea
-        label="공간 사진 업로드 (선택)"
-        hint="JPG, PNG, WEBP 등 이미지 파일"
-        file={formData.spacePhoto}
-        onFileChange={(file) => onFileChange("spacePhoto", file)}
-      />
-
-      <FileUploadArea
-        label="참고 이미지 업로드 (선택)"
-        hint="원하는 스타일의 참고 이미지"
-        file={formData.referenceImage}
-        onFileChange={(file) => onFileChange("referenceImage", file)}
-      />
-
-      <div className="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3.5">
-        <div className="flex gap-2.5">
-          <svg className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" viewBox="0 0 16 16" fill="currentColor">
-            <path fillRule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm8-3a1 1 0 01.993.883L9 6v3.5a1 1 0 01-1.993.117L7 9.5V6a1 1 0 011-1zm0 6.5a1 1 0 110-2 1 1 0 010 2z" clipRule="evenodd" />
-          </svg>
-          <p className="text-xs text-gray-500 leading-relaxed">
-            제공되는 이미지는 AI가 생성한 예시 이미지이며, 실제 시공 결과와는 차이가 있을 수 있습니다.
-          </p>
+      {/* 중요 요소 - 필수 */}
+      <div>
+        <div className="flex items-baseline justify-between mb-2">
+          <label className="block text-sm font-medium text-gray-700">
+            중요하게 생각하는 요소 <span className="text-orange-500">*</span>
+          </label>
+          <span className="text-xs text-gray-400">1개 이상 선택</span>
         </div>
+        <ChipCheckbox
+          options={PRIORITIES}
+          selected={formData.priorities}
+          fieldName="priorities"
+          onMultiChange={onMultiChange}
+        />
       </div>
 
-      <div className="text-center">
-        <button
-          type="button"
-          onClick={onSkip}
-          className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
+      {/* 스타일 취향 펼치기 */}
+      <button
+        type="button"
+        onClick={() => setShowExtra(!showExtra)}
+        className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-orange-500 transition-colors"
+      >
+        <svg
+          className={`h-4 w-4 transition-transform ${showExtra ? "rotate-90" : ""}`}
+          viewBox="0 0 16 16"
+          fill="none"
         >
-          사진 없이 계속하기 →
-        </button>
-      </div>
+          <path
+            d="M6 3L11 8L6 13"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+        스타일 취향 더 선택하기 <span className="text-xs text-gray-300">(선택)</span>
+      </button>
+
+      {showExtra && (
+        <div className="space-y-4 rounded-xl border border-gray-100 bg-gray-50/60 px-4 py-4">
+          {/* 선호 스타일 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-2">
+              선호 스타일
+            </label>
+            <ChipCheckbox
+              options={STYLES}
+              selected={formData.preferredStyles}
+              fieldName="preferredStyles"
+              onMultiChange={onMultiChange}
+            />
+          </div>
+
+          {/* 선호 분위기 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-2">
+              선호 분위기
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {ATMOSPHERES.map((a) => (
+                <label
+                  key={a}
+                  className={`flex cursor-pointer items-center rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all ${
+                    formData.preferredAtmosphere === a
+                      ? "border-orange-400 bg-orange-50 text-orange-600"
+                      : "border-gray-200 bg-white text-gray-600 hover:border-orange-200"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="preferredAtmosphere"
+                    value={a}
+                    checked={formData.preferredAtmosphere === a}
+                    onChange={(e) => onChange("preferredAtmosphere", e.target.value)}
+                    className="sr-only"
+                  />
+                  {a}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* 불편한 점 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-2">
+              현재 공간에서 불편한 점
+            </label>
+            <ChipCheckbox
+              options={PROBLEMS}
+              selected={formData.currentProblems}
+              fieldName="currentProblems"
+              onMultiChange={onMultiChange}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

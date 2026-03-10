@@ -1,75 +1,123 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Step1 from "./steps/Step1";
 import Step2 from "./steps/Step2";
 import Step3 from "./steps/Step3";
 import Step4 from "./steps/Step4";
+import Step5 from "./steps/Step5";
 
 export interface FormData {
-  // Step 1
-  name: string;
-  phone: string;
-  region: string;
+  // Step 1 - 공간 기본 정보
   spaceType: string;
-  // Step 2
+  region: string;
+  area: string;
+  areaUnknown: boolean;
+  currentCondition: string;
+  buildingAge: string;
+  // Step 2 - 공사 희망 정보
+  constructionScope: string;
+  desiredTiming: string;
   budget: string;
-  scope: string[];
-  style: string[];
+  constructionPurpose: string;
+  scheduleFlexibility: string;
+  occupancyDuringWork: string;
+  // Step 3 - 취향 및 우선순위
   priorities: string[];
-  details: string;
-  // Step 3
+  preferredStyles: string[];
+  preferredAtmosphere: string;
+  currentProblems: string[];
+  // Step 4 - 이미지 및 요청사항
   spacePhoto: File | null;
   referenceImage: File | null;
-  // Step 4
+  additionalRequest: string;
+  // Step 5 - 개인정보 및 동의
+  name: string;
+  phone: string;
+  email: string;
+  contactMethod: string[];
+  availableTime: string[];
   agreePrivacy: boolean;
   agreeConsult: boolean;
+  agreeMarketing: boolean;
 }
 
 const INITIAL_FORM_DATA: FormData = {
-  name: "",
-  phone: "",
-  region: "",
   spaceType: "",
+  region: "",
+  area: "",
+  areaUnknown: false,
+  currentCondition: "",
+  buildingAge: "",
+  constructionScope: "",
+  desiredTiming: "",
   budget: "",
-  scope: [],
-  style: [],
+  constructionPurpose: "",
+  scheduleFlexibility: "",
+  occupancyDuringWork: "",
   priorities: [],
-  details: "",
+  preferredStyles: [],
+  preferredAtmosphere: "",
+  currentProblems: [],
   spacePhoto: null,
   referenceImage: null,
+  additionalRequest: "",
+  name: "",
+  phone: "",
+  email: "",
+  contactMethod: [],
+  availableTime: [],
   agreePrivacy: false,
   agreeConsult: false,
+  agreeMarketing: false,
 };
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 
-const STEP_LABELS = ["기본 정보", "인테리어 정보", "사진 첨부", "동의 및 제출"];
+const STEP_LABELS = [
+  "공간 기본 정보",
+  "공사 희망 정보",
+  "취향 및 우선순위",
+  "이미지 및 요청사항",
+  "개인정보 및 동의",
+];
 
 function validateStep(step: number, formData: FormData): string | null {
   if (step === 1) {
-    if (!formData.region) return "지역을 선택해주세요.";
     if (!formData.spaceType) return "공간 유형을 선택해주세요.";
+    if (!formData.region) return "지역을 선택해주세요.";
+    if (!formData.area && !formData.areaUnknown) return "면적을 입력하거나 '잘 모르겠음'을 선택해주세요.";
+  }
+  if (step === 2) {
+    if (!formData.constructionScope) return "공사 범위를 선택해주세요.";
+    if (!formData.desiredTiming) return "공사 희망 시기를 선택해주세요.";
+    if (!formData.budget) return "예산 범위를 선택해주세요.";
+  }
+  if (step === 3) {
+    if (formData.priorities.length === 0) return "중요하게 생각하는 요소를 1개 이상 선택해주세요.";
+  }
+  if (step === 5) {
     if (!formData.name.trim()) return "이름을 입력해주세요.";
     if (!formData.phone.trim()) return "연락처를 입력해주세요.";
-  }
-  if (step === 4) {
     if (!formData.agreePrivacy) return "개인정보 수집 및 이용에 동의해주세요.";
-    if (!formData.agreeConsult) return "상담 및 견적 요청에 동의해주세요.";
+    if (!formData.agreeConsult) return "상담 진행을 위한 연락 수신에 동의해주세요.";
   }
   return null;
 }
 
 const COMPLETION_STEPS = [
-  { step: 1, title: "요청 검토", description: "영업일 기준 1일 이내" },
-  { step: 2, title: "업체 매칭 및 견적 준비", description: "조건에 맞는 업체 선별" },
-  { step: 3, title: "담당자 연락 및 결과 전달", description: "입력하신 연락처로 안내" },
+  { step: 1, title: "견적 요청 검토", description: "입력하신 정보와 이미지를 바탕으로 준비합니다" },
+  { step: 2, title: "업체 매칭 및 상담 준비", description: "조건에 맞는 업체를 선별합니다" },
+  { step: 3, title: "담당자 연락 및 결과 전달", description: "작성하신 연락처로 순차 안내드립니다" },
 ] as const;
 
 export default function MultiStepForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
@@ -79,25 +127,16 @@ export default function MultiStepForm() {
     setError(null);
   };
 
-  const handleMultiChange = (
-    field: keyof FormData,
-    value: string,
-    checked: boolean
-  ) => {
+  const handleMultiChange = (field: keyof FormData, value: string, checked: boolean) => {
     setFormData((prev) => {
       const current = prev[field] as string[];
-      const updated = checked
-        ? [...current, value]
-        : current.filter((v) => v !== value);
+      const updated = checked ? [...current, value] : current.filter((v) => v !== value);
       return { ...prev, [field]: updated };
     });
     setError(null);
   };
 
-  const handleFileChange = (
-    field: "spacePhoto" | "referenceImage",
-    file: File | null
-  ) => {
+  const handleFileChange = (field: "spacePhoto" | "referenceImage", file: File | null) => {
     setFormData((prev) => ({ ...prev, [field]: file }));
   };
 
@@ -130,70 +169,129 @@ export default function MultiStepForm() {
   };
 
   const handleSubmit = () => {
-    const validationError = validateStep(4, formData);
+    const validationError = validateStep(5, formData);
     if (validationError) {
       setError(validationError);
       return;
     }
     setError(null);
-    // TODO: 실제 API 연동 시 여기서 formData를 전송합니다.
-    setIsSubmitted(true);
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      setIsSubmitted(true);
+    }, 2000);
   };
+
+  if (isLoading) {
+    return (
+      <div id="form" className="w-full max-w-lg mx-auto">
+        <div className="rounded-2xl bg-white shadow-lg shadow-gray-100/60 border border-gray-100 px-6 py-16 sm:px-10 text-center">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50">
+            <div className="h-8 w-8 animate-spin rounded-full border-3 border-orange-200 border-t-orange-500" style={{ borderWidth: "3px" }} />
+          </div>
+          <p className="text-base font-semibold text-gray-800 animate-pulse">
+            완성된 인테리어 미리보기를 생성 중입니다...
+          </p>
+          <p className="mt-2 text-sm text-gray-400">잠시만 기다려주세요</p>
+        </div>
+      </div>
+    );
+  }
 
   if (isSubmitted) {
     return (
       <div id="form" className="w-full max-w-lg mx-auto">
-        <div className="rounded-2xl bg-white shadow-lg shadow-gray-100/60 border border-gray-100 px-6 py-10 sm:px-10 text-center">
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-orange-100">
-            <svg
-              className="h-8 w-8 text-orange-500"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 13l4 4L19 7"
+        {/* 라이트박스 전체화면 오버레이 */}
+        {isLightboxOpen && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
+            onClick={() => setIsLightboxOpen(false)}
+          >
+            <div className="relative w-full h-full max-w-5xl mx-auto flex items-center justify-center p-4">
+              <Image
+                src="/after.jpg"
+                alt="예상 완성 인테리어 이미지"
+                fill
+                className="object-contain"
+                onClick={(e) => e.stopPropagation()}
               />
-            </svg>
+              <button
+                onClick={() => setIsLightboxOpen(false)}
+                className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" />
+                </svg>
+              </button>
+              <p className="absolute bottom-6 left-1/2 -translate-x-1/2 text-xs text-white/50">
+                화면을 클릭하면 닫힙니다
+              </p>
+            </div>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">
-            요청이 접수되었습니다
-          </h2>
-          <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
-            입력해주신 내용을 바탕으로 요청 사항을 정리한 뒤,
-            업체 검토 및 견적 진행에 활용할 예정입니다.
-          </p>
-          <p className="mt-3 text-gray-500 text-sm leading-relaxed">
-            입력하신 연락처로 안내 문자를 보내드렸습니다.
-          </p>
-          {(formData.spacePhoto || formData.referenceImage) && (
-            <p className="mt-3 text-gray-500 text-sm leading-relaxed">
-              공간 사진과 참고 이미지를 첨부해주신 경우에는
-              예시 이미지 제공에도 반영될 수 있습니다.
-            </p>
-          )}
+        )}
 
-          {/* 진행 안내 */}
-          <div className="mt-8 rounded-xl bg-gray-50 border border-gray-100 px-5 py-5 text-left">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-gray-400 text-center">
-              이렇게 진행됩니다
+        <div className="rounded-2xl bg-white shadow-lg shadow-gray-100/60 border border-gray-100 overflow-hidden">
+          {/* AI 생성 인테리어 이미지 */}
+          <div
+            className="relative w-full aspect-video cursor-zoom-in group"
+            onClick={() => setIsLightboxOpen(true)}
+          >
+            <Image
+              src="/after.jpg"
+              alt="예상 완성 인테리어 이미지"
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+            <span className="absolute top-3 left-3 rounded-full bg-orange-500/90 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+              예상 완성 인테리어 이미지
+            </span>
+            {/* 확대 힌트 아이콘 */}
+            <div className="absolute top-3 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/30 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 backdrop-blur-sm">
+              <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M3 8V3m0 0h5M3 3l6 6m8-6h-5m5 0v5m0-5l-6 6M3 17v-5m0 5h5m-5 0l6-6m8 6l-6-6m6 6v-5m0 5h-5" />
+              </svg>
+            </div>
+          </div>
+          {/* 이미지 하단 면책 문구 */}
+          <p className="px-4 py-2 text-center text-xs text-gray-400 bg-gray-50 border-b border-gray-100">
+            해당 이미지는 AI가 만든 이미지이므로 실제 결과물과 다를 수 있습니다.
+          </p>
+
+          <div className="px-6 py-8 sm:px-10 text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-orange-100">
+              <svg className="h-7 w-7 text-orange-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2 sm:text-2xl">
+              견적 요청이 접수되었습니다
+            </h2>
+            <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
+              입력해주신 정보와 이미지를 바탕으로 상담 및 완성된 인테리어 미리보기 준비를 진행합니다.
             </p>
-            <ol className="flex flex-col gap-3">
-              {COMPLETION_STEPS.map((item) => (
-                <li key={item.step} className="flex items-start gap-3">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-100 text-xs font-bold text-orange-600">
-                    {item.step}
-                  </span>
-                  <div>
-                    <p className="text-sm font-medium text-gray-800">{item.title}</p>
-                    <p className="text-xs text-gray-400">{item.description}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
+            <p className="mt-2 text-gray-500 text-sm leading-relaxed">
+              작성해주신 연락처로 순차적으로 안내드릴 예정입니다.
+            </p>
+
+            <div className="mt-7 rounded-xl bg-gray-50 border border-gray-100 px-5 py-5 text-left">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-gray-400 text-center">
+                이렇게 진행됩니다
+              </p>
+              <ol className="flex flex-col gap-3">
+                {COMPLETION_STEPS.map((item) => (
+                  <li key={item.step} className="flex items-start gap-3">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-100 text-xs font-bold text-orange-600">
+                      {item.step}
+                    </span>
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">{item.title}</p>
+                      <p className="text-xs text-gray-400">{item.description}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
           </div>
         </div>
       </div>
@@ -207,6 +305,12 @@ export default function MultiStepForm() {
       <div className="rounded-2xl bg-white shadow-lg shadow-gray-100/60 border border-gray-100 overflow-hidden">
         {/* Progress Header */}
         <div className="px-6 pt-6 pb-4 sm:px-8 sm:pt-7">
+          {/* 안내 문구 */}
+          <p className="mb-4 text-xs text-gray-400 leading-relaxed text-center bg-gray-50 rounded-lg px-3 py-2">
+            필수 항목만 입력하셔도 상담 신청이 가능합니다.
+            추가 정보를 작성해주실수록 더 정확한 견적과 완성된 인테리어 미리보기를 받을 수 있습니다.
+          </p>
+
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-orange-500 uppercase tracking-wider">
               {STEP_LABELS[currentStep - 1]}
@@ -217,6 +321,7 @@ export default function MultiStepForm() {
               {TOTAL_STEPS}
             </span>
           </div>
+
           {/* Progress Bar */}
           <div className="h-1.5 w-full rounded-full bg-gray-100 overflow-hidden">
             <div
@@ -224,6 +329,7 @@ export default function MultiStepForm() {
               style={{ width: `${progressPercent + 100 / TOTAL_STEPS}%` }}
             />
           </div>
+
           {/* Step indicators */}
           <div className="mt-3 flex items-center justify-between">
             {Array.from({ length: TOTAL_STEPS }).map((_, i) => {
@@ -273,29 +379,33 @@ export default function MultiStepForm() {
             }`}
           >
             {currentStep === 1 && (
-              <Step1
-                formData={formData}
-                onChange={handleChange as (field: keyof FormData, value: string) => void}
-              />
+              <Step1 formData={formData} onChange={handleChange} />
             )}
             {currentStep === 2 && (
               <Step2
                 formData={formData}
                 onChange={handleChange as (field: keyof FormData, value: string) => void}
-                onMultiChange={handleMultiChange}
               />
             )}
             {currentStep === 3 && (
               <Step3
                 formData={formData}
-                onFileChange={handleFileChange}
-                onSkip={() => transitionStep(currentStep + 1, "forward")}
+                onMultiChange={handleMultiChange}
+                onChange={handleChange as (field: keyof FormData, value: string) => void}
               />
             )}
             {currentStep === 4 && (
               <Step4
                 formData={formData}
-                onChange={handleChange as (field: keyof FormData, value: boolean) => void}
+                onFileChange={handleFileChange}
+                onChange={handleChange as (field: keyof FormData, value: string) => void}
+              />
+            )}
+            {currentStep === 5 && (
+              <Step5
+                formData={formData}
+                onChange={handleChange}
+                onMultiChange={handleMultiChange}
               />
             )}
           </div>
