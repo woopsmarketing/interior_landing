@@ -1,17 +1,22 @@
+import dynamic from "next/dynamic";
 import Header from "@/components/sections/Header";
 import Hero from "@/components/sections/Hero";
 import QuickBenefits from "@/components/sections/QuickBenefits";
-import BeforeAfter from "@/components/sections/BeforeAfter";
-import Problem from "@/components/sections/Problem";
-import CoreValue from "@/components/sections/CoreValue";
-import ComparisonTable from "@/components/sections/ComparisonTable";
-import HowItWorks from "@/components/sections/HowItWorks";
-import SocialProof from "@/components/sections/SocialProof";
-import WhoFor from "@/components/sections/WhoFor";
-import Outcomes from "@/components/sections/Outcomes";
-import Trust from "@/components/sections/Trust";
-import FAQ from "@/components/sections/FAQ";
-import FinalCTA from "@/components/sections/FinalCTA";
+
+const BeforeAfter = dynamic(() => import("@/components/sections/BeforeAfter"));
+const Problem = dynamic(() => import("@/components/sections/Problem"));
+const CoreValue = dynamic(() => import("@/components/sections/CoreValue"));
+const ComparisonTable = dynamic(
+  () => import("@/components/sections/ComparisonTable")
+);
+const HowItWorks = dynamic(() => import("@/components/sections/HowItWorks"));
+const SocialProof = dynamic(() => import("@/components/sections/SocialProof"));
+const WhoFor = dynamic(() => import("@/components/sections/WhoFor"));
+const Outcomes = dynamic(() => import("@/components/sections/Outcomes"));
+const Trust = dynamic(() => import("@/components/sections/Trust"));
+const FAQ = dynamic(() => import("@/components/sections/FAQ"));
+const FinalCTA = dynamic(() => import("@/components/sections/FinalCTA"));
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-white">

@@ -28,3 +28,8 @@ npm-debug.log*
 
 # OS
 Thumbs.db
+
+# Claude Code
+.agents/
+.claude/
+skills-lock.json

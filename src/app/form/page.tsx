@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "견적 요청하기 | 인테리어 견적 비교",
+  description: "간단한 4단계로 인테리어 견적을 요청하세요.",
+  robots: { index: false, follow: false },
+};
 import MultiStepForm from "@/components/form/MultiStepForm";
 
 export default function FormPage() {
