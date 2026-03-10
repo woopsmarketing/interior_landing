@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { motion } from "motion/react";
 import { CheckCircle2, HelpCircle, AlertTriangle } from "lucide-react";
-import { useState } from "react";
 
 const trustBadges = [
   "상담 신청 무료",
@@ -26,16 +25,6 @@ const empathyPoints = [
   },
 ] as const;
 
-// 인테리어 스타일 태그 (한국 감성 취향 선택)
-const STYLE_TAGS = [
-  "모던 미니멀",
-  "내추럴 우드",
-  "북유럽 스칸디나비안",
-  "클래식 고급",
-  "빈티지 레트로",
-  "화이트 & 그레이",
-] as const;
-
 const handleSecondaryCtaClick = () => {
   if (typeof window !== "undefined") {
     const target = document.getElementById("how-it-works");
@@ -44,8 +33,6 @@ const handleSecondaryCtaClick = () => {
 };
 
 export default function Hero() {
-  const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
-
   return (
     <section className="relative w-full overflow-hidden py-16 sm:py-20 lg:py-24">
       {/* ── 배경 레이어 ── */}
@@ -57,10 +44,10 @@ export default function Hero() {
       <div className="absolute -bottom-24 -left-24 h-[380px] w-[380px] rounded-full bg-amber-100/40 blur-3xl" />
       <div className="absolute right-1/4 bottom-0 h-[300px] w-[300px] rounded-full bg-orange-100/30 blur-2xl" />
 
-      {/* 실제 배경 이미지: public/hero-bg.jpg 파일 추가 시 자동 적용 */}
+      {/* 배경 이미지 — 따뜻한 인테리어 감성 */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-[0.10]"
-        style={{ backgroundImage: "url('/hero-bg.jpg')" }}
+        className="absolute inset-0 bg-cover bg-center opacity-[0.13]"
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1920&q=80')" }}
       />
 
       {/* ── 컨텐츠 ── */}
@@ -133,45 +120,6 @@ export default function Hero() {
             ))}
           </motion.div>
 
-          {/* ── 인테리어 스타일 태그 ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="mt-10 w-full max-w-xl"
-          >
-            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-gray-400 text-center">
-              원하는 스타일이 있으신가요?
-            </p>
-            <div className="flex flex-wrap justify-center gap-2">
-              {STYLE_TAGS.map((tag) => (
-                <button
-                  key={tag}
-                  onClick={() => setSelectedStyle(selectedStyle === tag ? null : tag)}
-                  className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-all duration-200 ${
-                    selectedStyle === tag
-                      ? "border-orange-500 bg-orange-500 text-white shadow-md"
-                      : "border-gray-200 bg-white/70 text-gray-600 hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600"
-                  }`}
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-            {selectedStyle && (
-              <motion.p
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-3 text-center text-sm text-orange-500 font-medium"
-              >
-                '{selectedStyle}' 스타일로 견적을 받아보세요 →{" "}
-                <Link href="/form" className="underline hover:text-orange-600">
-                  시작하기
-                </Link>
-              </motion.p>
-            )}
-          </motion.div>
-
           {/* 공감 포인트 3개 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -179,7 +127,7 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.6 }}
             className="mt-8 w-full max-w-xl flex flex-col gap-4 text-left"
           >
-            <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 text-center">
+            <p className="text-base font-bold text-gray-700 text-center mb-2">
               이런 분들께 꼭 맞습니다
             </p>
             {empathyPoints.map(({ Icon, text }) => (
@@ -187,7 +135,7 @@ export default function Hero() {
                 <span className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-orange-50">
                   <Icon className="h-4 w-4 text-orange-400" />
                 </span>
-                <p className="text-sm leading-relaxed text-gray-600">{text}</p>
+                <p className="text-base leading-relaxed text-gray-700">{text}</p>
               </div>
             ))}
           </motion.div>
