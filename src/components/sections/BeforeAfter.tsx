@@ -64,7 +64,7 @@ export default function BeforeAfter() {
         </p>
         <div
           ref={containerRef}
-          className="relative h-[480px] cursor-ew-resize select-none overflow-hidden rounded-2xl shadow-md sm:h-[680px]"
+          className="relative aspect-[11/6] cursor-ew-resize select-none overflow-hidden rounded-2xl shadow-md sm:aspect-auto sm:h-[680px]"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
