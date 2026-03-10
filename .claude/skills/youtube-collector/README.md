@@ -86,7 +86,7 @@ python3 .claude/skills/youtube-collector/scripts/setup_api_key.py
 ```
 
 ```
-유튜브 API 키 새로 설정해줘
+유튜브 API 키 새로 설정해.
 ```
 
 ## 데이터 저장 위치
