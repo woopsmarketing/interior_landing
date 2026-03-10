@@ -47,7 +47,7 @@ export default function Hero() {
       {/* 배경 이미지 — 따뜻한 인테리어 감성 */}
       <div
         className="absolute inset-0 bg-cover bg-center opacity-[0.13]"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1920&q=80')" }}
+        style={{ backgroundImage: "url('/hero-bg.jpg')" }}
       />
 
       {/* ── 컨텐츠 ── */}
