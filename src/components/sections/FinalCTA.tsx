@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
-import { MessageCircle } from "lucide-react";
 
 // ============================================================================
 // 메인 컴포넌트
@@ -69,29 +68,7 @@ export default function FinalCTA() {
             최저가 견적 요청받기
           </Link>
 
-          {/* 카카오 채널 상담 버튼 */}
-          {/* 실제 카카오 채널 URL로 교체하세요: https://pf.kakao.com/_YOUR_CHANNEL */}
-          <a
-            href="#kakao-channel"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex w-full items-center justify-center gap-2 rounded-full bg-[#FEE500] px-8 py-4 text-base font-semibold text-[#3C1E1E] shadow-md transition-opacity hover:opacity-90 active:opacity-80 sm:w-auto"
-          >
-            <MessageCircle className="h-5 w-5 flex-shrink-0" />
-            카카오로 문의하기
-          </a>
         </motion.div>
-
-        {/* 응답 보장 안내 */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="mt-5 text-sm text-white/60"
-        >
-          영업일 기준 2~3일 이내 담당자가 직접 연락드립니다
-        </motion.p>
       </div>
     </section>
   );
