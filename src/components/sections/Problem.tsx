@@ -70,7 +70,7 @@ function ProblemCard({ card, index }: ProblemCardProps) {
       <h3 className="mb-3 text-lg font-bold leading-snug text-gray-900">
         {card.title}
       </h3>
-      <p className="text-base leading-relaxed text-gray-500">{card.description}</p>
+      <p className="text-base font-medium leading-relaxed text-gray-900">{card.description}</p>
     </motion.div>
   );
 }
@@ -96,7 +96,7 @@ export default function Problem() {
             <br className="hidden sm:block" />
             하고 싶은 마음보다 걱정이 먼저 앞서기 때문입니다
           </h2>
-          <p className="mx-auto max-w-2xl text-base leading-loose text-gray-500 sm:text-lg">
+          <p className="mx-auto max-w-2xl text-base font-medium leading-loose text-gray-900 sm:text-lg">
             인테리어는 누구나 기대를 안고 시작하지만,
             막상 준비하려고 하면 생각보다 더 많은 고민이 생깁니다.
             <br className="hidden sm:block" />

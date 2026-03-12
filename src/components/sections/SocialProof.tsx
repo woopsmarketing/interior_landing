@@ -150,7 +150,7 @@ export default function SocialProof() {
               <p className="text-2xl font-bold text-orange-500 sm:text-3xl">
                 {stat.value}
               </p>
-              <p className="mt-1.5 text-sm text-gray-600">{stat.label}</p>
+              <p className="mt-1.5 text-sm font-medium text-gray-900">{stat.label}</p>
             </motion.div>
           ))}
         </div>
@@ -209,7 +209,7 @@ export default function SocialProof() {
                   key={review.name}
                   className="w-[85vw] max-w-[320px] flex-shrink-0 flex flex-col rounded-2xl border border-gray-100 bg-gray-50 p-6 shadow-sm"
                 >
-                  <p className="flex-1 text-[15px] leading-relaxed text-gray-700">
+                  <p className="flex-1 text-base font-semibold leading-relaxed text-gray-900">
                     &ldquo;{review.text}&rdquo;
                   </p>
                   <div className="mt-4 border-t border-gray-200 pt-4">

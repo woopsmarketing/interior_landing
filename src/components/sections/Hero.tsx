@@ -74,13 +74,17 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <p className="mt-5 text-base leading-relaxed text-gray-600 sm:text-lg">
-              예산은 한정적이고, 원하는 분위기는 있는데, 어떤 업체를 골라야
-              할지 모르겠다면 이제 혼자 헤매지 마세요.
+            <p className="mt-6 text-lg font-semibold leading-relaxed text-gray-800 sm:text-xl">
+              예산은 한정적이고, 원하는 분위기는 있는데,
+              <br className="hidden sm:block" />
+              <span className="text-orange-500">어떤 업체를 골라야 할지</span> 모르겠다면
+              <br />
+              이제 혼자 헤매지 마세요.
             </p>
-            <p className="mt-3 text-base leading-relaxed text-gray-600 sm:text-lg">
-              당신의 취향과 공간 조건, 예산을 먼저 정리하고, 그에 맞는
-              인테리어 업체를 비교할 수 있도록 도와드립니다.
+            <p className="mt-4 text-base font-medium leading-relaxed text-gray-700 sm:text-lg">
+              당신의 취향과 공간 조건, 예산을 먼저 정리하고,
+              <br className="hidden sm:block" />
+              그에 맞는 인테리어 업체를 비교할 수 있도록 도와드립니다.
             </p>
           </motion.div>
 
@@ -89,13 +93,13 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-8 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-center"
+            className="mt-10 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-center"
           >
             <Link
               href="/form"
-              className="w-full rounded-full bg-orange-500 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-orange-200 transition-colors hover:bg-orange-600 active:bg-orange-700 sm:w-auto"
+              className="w-full rounded-full bg-orange-500 px-10 py-4.5 text-lg font-bold text-white shadow-lg shadow-orange-200/60 transition-all hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-200/80 active:bg-orange-700 sm:w-auto"
             >
-              무료 견적 요청하기
+              1분 만에 인테리어 결과 미리보기
             </Link>
             <button
               onClick={handleSecondaryCtaClick}
@@ -110,11 +114,11 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2"
+            className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5"
           >
             {trustBadges.map((badge) => (
-              <span key={badge} className="flex items-center gap-1.5 text-sm text-gray-500">
-                <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-orange-400" />
+              <span key={badge} className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+                <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-orange-500" />
                 {badge}
               </span>
             ))}
@@ -125,17 +129,17 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="mt-8 w-full max-w-xl flex flex-col gap-4 text-left"
+            className="mt-10 w-full max-w-xl flex flex-col gap-3 text-left"
           >
-            <p className="text-base font-bold text-gray-700 text-center mb-2">
+            <p className="text-lg font-bold text-gray-900 text-center mb-3">
               이런 분들께 꼭 맞습니다
             </p>
             {empathyPoints.map(({ Icon, text }) => (
-              <div key={text} className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-orange-50">
-                  <Icon className="h-4 w-4 text-orange-400" />
+              <div key={text} className="flex items-center gap-4 rounded-2xl border border-orange-100 bg-white/70 px-5 py-4 backdrop-blur-sm">
+                <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-orange-50">
+                  <Icon className="h-5.5 w-5.5 text-orange-500" />
                 </span>
-                <p className="text-base leading-relaxed text-gray-700">{text}</p>
+                <p className="text-base font-semibold leading-snug text-gray-900">{text}</p>
               </div>
             ))}
           </motion.div>

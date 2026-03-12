@@ -67,7 +67,7 @@ export default function Trust() {
                 </div>
                 <div>
                   <p className="text-base font-bold text-gray-900">{point.title}</p>
-                  <p className="mt-1 text-sm leading-relaxed text-gray-500">
+                  <p className="mt-1 text-sm font-medium leading-relaxed text-gray-900">
                     {point.description}
                   </p>
                 </div>
@@ -97,7 +97,7 @@ export default function Trust() {
                 className="h-4 w-4 flex-shrink-0 text-orange-500"
                 strokeWidth={2}
               />
-              <span className="text-sm font-medium text-gray-700">{point}</span>
+              <span className="text-sm font-semibold text-gray-900">{point}</span>
             </motion.div>
           ))}
         </motion.div>
@@ -108,7 +108,7 @@ export default function Trust() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.45 }}
-          className="mx-auto mt-10 max-w-xl text-center text-base leading-loose text-gray-500"
+          className="mx-auto mt-10 max-w-xl text-center text-base font-medium leading-loose text-gray-900"
         >
           인테리어는 쉽게 결정할 일이 아니기 때문에
           <br className="hidden sm:block" />

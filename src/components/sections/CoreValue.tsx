@@ -46,7 +46,7 @@ export default function CoreValue() {
               <br className="hidden sm:block" />
               먼저 당신의 조건을 정리합니다
             </h2>
-            <p className="mb-8 text-base leading-loose text-gray-500 sm:text-lg">
+            <p className="mb-8 text-lg font-semibold leading-relaxed text-gray-800 sm:text-xl">
               인테리어가 어려운 이유는 업체가 없어서가 아니라,
               나에게 맞는 업체를 고를 기준이 분명하지 않기 때문입니다.
               <br /><br />

@@ -70,7 +70,7 @@ function OutcomeItem({ item, index }: OutcomeItemProps) {
         <h3 className="mb-1.5 text-base font-bold leading-snug text-gray-900 sm:text-lg">
           {item.title}
         </h3>
-        <p className="text-base leading-relaxed text-gray-500">{item.description}</p>
+        <p className="text-base font-medium leading-relaxed text-gray-900">{item.description}</p>
       </div>
     </motion.div>
   );

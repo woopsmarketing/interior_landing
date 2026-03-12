@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
 import Header from "@/components/sections/Header";
+import PromoBanner from "@/components/sections/PromoBanner";
 import Hero from "@/components/sections/Hero";
 import QuickBenefits from "@/components/sections/QuickBenefits";
 
@@ -20,6 +21,7 @@ const FinalCTA = dynamic(() => import("@/components/sections/FinalCTA"));
 export default function Home() {
   return (
     <main className="min-h-screen bg-white">
+      <PromoBanner />
       <Header />
       <Hero />
       <QuickBenefits />

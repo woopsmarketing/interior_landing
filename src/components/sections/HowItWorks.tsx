@@ -94,7 +94,7 @@ function StepCard({ item, index, isLast }: StepCardProps) {
       <h3 className="mb-3 text-base font-bold leading-snug text-gray-900 sm:text-lg">
         {item.title}
       </h3>
-      <p className="mb-3 text-base leading-relaxed text-gray-500">
+      <p className="mb-3 text-base font-medium leading-relaxed text-gray-900">
         {item.description}
       </p>
 

@@ -25,7 +25,7 @@ export default function QuickBenefits() {
           {BENEFITS.map(({ icon: Icon, label }) => (
             <div key={label} className="flex items-center gap-2">
               <Icon className="h-5 w-5 flex-shrink-0 text-orange-500" strokeWidth={1.8} />
-              <span className="text-sm font-medium text-gray-700">{label}</span>
+              <span className="text-sm font-semibold text-gray-900">{label}</span>
             </div>
           ))}
         </div>

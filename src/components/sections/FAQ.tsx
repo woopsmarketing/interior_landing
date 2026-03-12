@@ -98,7 +98,7 @@ export default function FAQ() {
                 className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
                 aria-expanded={openIndex === index}
               >
-                <span className="text-base font-medium text-gray-900">
+                <span className="text-base font-semibold text-gray-900">
                   {faq.question}
                 </span>
                 <ChevronDown
@@ -118,7 +118,7 @@ export default function FAQ() {
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.28, ease: "easeInOut" }}
                   >
-                    <div className="border-t border-gray-100 px-6 pb-6 pt-4 text-sm leading-relaxed text-gray-500">
+                    <div className="border-t border-gray-100 px-6 pb-6 pt-4 text-sm font-semibold leading-relaxed text-gray-800">
                       {faq.answer}
                     </div>
                   </motion.div>

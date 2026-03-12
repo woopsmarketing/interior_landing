@@ -51,7 +51,7 @@ export default function WhoFor() {
                 className="mt-0.5 h-5 w-5 flex-shrink-0 text-orange-500"
                 strokeWidth={2}
               />
-              <p className="text-base leading-relaxed text-gray-700">{item}</p>
+              <p className="text-base font-semibold leading-snug text-gray-900">{item}</p>
             </motion.div>
           ))}
         </div>
@@ -62,7 +62,7 @@ export default function WhoFor() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="mt-10 text-center text-base font-medium leading-relaxed text-gray-500 sm:text-lg"
+          className="mt-10 text-center text-base font-medium leading-relaxed text-gray-900 sm:text-lg"
         >
           혼자 정리하기 어려웠던 인테리어,{" "}
           <span className="text-orange-500 font-semibold">

@@ -59,7 +59,7 @@ export default function ComparisonTable() {
           <h2 className="text-2xl font-bold leading-snug text-gray-900 sm:text-3xl lg:text-4xl">
             📊 직접 알아볼 때 vs 인테리어비교
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-gray-500">
+          <p className="mt-4 text-base font-medium leading-relaxed text-gray-900">
             어떤 점이 다른지 한눈에 비교해보세요
           </p>
         </motion.div>
@@ -87,14 +87,14 @@ export default function ComparisonTable() {
                 index < ROWS.length - 1 ? "border-b border-gray-100" : ""
               }`}
             >
-              <p className="text-sm font-medium text-gray-700">{row.item}</p>
+              <p className="text-sm font-semibold text-gray-900">{row.item}</p>
               <div className="flex items-start gap-2">
                 <X className="mt-0.5 h-4 w-4 flex-shrink-0 text-gray-300" strokeWidth={2.5} />
                 <p className="text-sm leading-relaxed text-gray-400">{row.direct}</p>
               </div>
               <div className="flex items-start gap-2">
                 <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-orange-500" strokeWidth={2.5} />
-                <p className="text-sm font-medium leading-relaxed text-gray-700">{row.service}</p>
+                <p className="text-sm font-semibold leading-relaxed text-gray-900">{row.service}</p>
               </div>
             </div>
           ))}
@@ -121,7 +121,7 @@ export default function ComparisonTable() {
                 </div>
                 <div className="flex items-start gap-2 p-4">
                   <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-orange-500" strokeWidth={2.5} />
-                  <p className="text-xs font-medium leading-relaxed text-gray-700">{row.service}</p>
+                  <p className="text-xs font-semibold leading-relaxed text-gray-900">{row.service}</p>
                 </div>
               </div>
             </motion.div>
