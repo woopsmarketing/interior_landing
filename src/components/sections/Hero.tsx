@@ -75,16 +75,16 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <p className="mt-6 text-lg font-semibold leading-relaxed text-gray-800 sm:text-xl">
-              예산은 한정적이고, 원하는 분위기는 있는데,
-              <br className="hidden sm:block" />
-              <span className="text-orange-500">어떤 업체를 골라야 할지</span> 모르겠다면
+              업체를 일일이 찾고 연락하지 않아도 됩니다.
               <br />
-              이제 혼자 헤매지 마세요.
+              <span className="text-orange-500">내 조건을 한 번 작성하면</span>,
+              <br className="hidden sm:block" />
+              전국 100개 넘는 업체가 먼저 답변합니다.
             </p>
             <p className="mt-4 text-base font-medium leading-relaxed text-gray-700 sm:text-lg">
-              당신의 취향과 공간 조건, 예산을 먼저 정리하고,
+              답변을 비교하고, 마음에 드는 업체를
               <br className="hidden sm:block" />
-              그에 맞는 인테리어 업체를 비교할 수 있도록 도와드립니다.
+              직접 골라서 연락하세요.
             </p>
           </motion.div>
 
@@ -99,7 +99,7 @@ export default function Hero() {
               href="/form"
               className="w-full rounded-full bg-orange-500 px-10 py-4.5 text-lg font-bold text-white shadow-lg shadow-orange-200/60 transition-all hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-200/80 active:bg-orange-700 sm:w-auto"
             >
-              1분 만에 인테리어 결과 미리보기
+              한 번 작성하면, 100개 업체가 먼저 답변합니다
             </Link>
             <button
               onClick={handleSecondaryCtaClick}

@@ -45,9 +45,9 @@ const STEPS = [
   {
     step: 4,
     icon: CheckCircle2,
-    title: "견적 결과를 비교하고 원하는 업체를 선택합니다",
+    title: "답변을 비교하고, 마음에 드는 업체에 직접 연락합니다",
     description:
-      "여러 업체의 견적과 제안을 비교한 뒤 고객이 원하는 업체를 직접 선택할 수 있습니다.",
+      "관심 있는 업체들의 답변을 비교한 뒤, 마음에 드는 업체를 직접 골라서 연락할 수 있습니다.",
     note: null,
     disclaimer: null,
   },

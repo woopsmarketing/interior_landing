@@ -32,18 +32,18 @@ export default function FinalCTA() {
           transition={{ duration: 0.55, delay: 0.15 }}
           className="mx-auto mt-6 max-w-lg text-base leading-loose text-white/90 sm:text-lg"
         >
-          원하는 분위기를 설명하는 것도 어렵고,
+          업체를 일일이 찾고, 같은 이야기를 반복하고,
           <br className="hidden sm:block" />
-          업체를 찾는 것도 부담스럽고,
-          <br className="hidden sm:block" />
-          견적을 비교하는 일까지 막막하게 느껴졌다면
+          견적을 하나씩 비교하는 과정이 지치셨다면
           <br />
           <br />
-          이제는 혼자 헤매지 마세요.
+          이제는 한 번만 작성하세요.
           <br className="hidden sm:block" />
-          당신의 조건을 먼저 정리하고, 다양한 업체의 견적을 비교한 뒤
+          전국 100개 넘는 업체가 내 조건을 검토하고,
           <br className="hidden sm:block" />
-          원하는 선택을 할 수 있도록 도와드립니다.
+          관심 있는 업체만 먼저 답변합니다.
+          <br />
+          답변을 비교한 뒤, 마음에 드는 업체에 직접 연락하세요.
           <br />
           <br />
           <span className="text-sm text-orange-200">
@@ -65,7 +65,7 @@ export default function FinalCTA() {
             href="/form"
             className="w-full rounded-full bg-white px-8 py-4 text-base font-semibold text-orange-600 shadow-lg transition-colors hover:bg-orange-50 active:bg-orange-100 sm:w-auto"
           >
-            최저가 견적 요청받기
+            나의 요구에 맞는 업체 받아보기
           </Link>
 
         </motion.div>

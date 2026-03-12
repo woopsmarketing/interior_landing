@@ -53,7 +53,7 @@ export default function Header() {
                 </span>
 
                 <span className="shrink-0 rounded-full bg-white/20 px-4 py-1.5 text-sm font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/30">
-                  무료 체험 →
+                  1분 인테리어 결과 미리보기 →
                 </span>
               </Link>
 
@@ -91,7 +91,7 @@ export default function Header() {
               onClick={handleCtaClick}
               className="rounded-full bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-orange-600 active:bg-orange-700"
             >
-              무료로 견적 요청하기
+              1분 인테리어 미리보기
             </button>
           </div>
         </div>

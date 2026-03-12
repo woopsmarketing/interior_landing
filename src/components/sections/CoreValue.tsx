@@ -59,7 +59,7 @@ export default function CoreValue() {
               href="/form"
               className="w-full rounded-full bg-orange-500 px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-orange-600 active:bg-orange-700 sm:w-auto sm:text-base inline-block text-center"
             >
-              미리 인테리어 결과물 확인하기
+              나에게 맞는 업체 고르기
             </Link>
           </motion.div>
 
