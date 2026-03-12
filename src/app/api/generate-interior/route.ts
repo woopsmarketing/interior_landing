@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI, { toFile } from "openai";
 
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+function getClient() {
+  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
+}
 
 // 한국어 → 영어 매핑
 const PRIORITY_MAP: Record<string, string> = {
@@ -52,7 +54,7 @@ function mapList(items: string[], map: Record<string, string>): string {
 // Step 1: GPT-4o Vision — 공간 구조 분석 (FIXED / REMOVABLE 분류)
 // ─────────────────────────────────────────────────────────────────────────────
 async function analyzeSpaceStructure(photoBase64: string): Promise<string> {
-  const response = await client.chat.completions.create({
+  const response = await getClient().chat.completions.create({
     model: "gpt-4o",
     messages: [
       {
@@ -98,7 +100,7 @@ Be precise and technical. Use spatial terms like "left wall", "rear center", "ce
 //       → 구조 복사 없이 색상/재질/분위기만 프롬프트에 주입
 // ─────────────────────────────────────────────────────────────────────────────
 async function analyzeReferenceStyle(referenceBase64: string): Promise<string> {
-  const response = await client.chat.completions.create({
+  const response = await getClient().chat.completions.create({
     model: "gpt-4o",
     messages: [
       {
@@ -269,7 +271,7 @@ export async function POST(request: NextRequest) {
     console.log("[generate-interior] Step 3: 이미지 생성...\n", prompt);
 
     const spaceFile = await toFile(spaceBuffer, "space.png", { type: "image/png" });
-    const result = await client.images.edit({
+    const result = await getClient().images.edit({
       model: "gpt-image-1",
       image: spaceFile,
       prompt,
