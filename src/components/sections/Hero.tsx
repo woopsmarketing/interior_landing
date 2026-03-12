@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
-import { CheckCircle2, HelpCircle, AlertTriangle } from "lucide-react";
+import { CheckCircle2, HelpCircle, AlertTriangle, Sparkles } from "lucide-react";
 
 const trustBadges = [
   "상담 신청 무료",
@@ -24,13 +24,6 @@ const empathyPoints = [
     text: "공사비보다 더 무서운 추가금과 업체 선택 실패가 걱정되는 분",
   },
 ] as const;
-
-const handleSecondaryCtaClick = () => {
-  if (typeof window !== "undefined") {
-    const target = document.getElementById("how-it-works");
-    if (target) target.scrollIntoView({ behavior: "smooth" });
-  }
-};
 
 export default function Hero() {
   return (
@@ -81,25 +74,30 @@ export default function Hero() {
               <br className="hidden sm:block" />
               전국 100개 넘는 업체가 먼저 답변합니다.
             </p>
-            <p className="mt-4 text-base font-medium leading-relaxed text-gray-700 sm:text-lg">
-              답변을 비교하고, 마음에 드는 업체를
-              <br className="hidden sm:block" />
-              직접 골라서 연락하세요.
+            <p className="mt-5 text-lg font-bold leading-snug text-gray-900 sm:text-xl">
+              답변을 비교하고, <span className="text-orange-500">마음에 드는 업체를 직접 골라서</span> 연락하세요.
             </p>
           </motion.div>
 
-          {/* CTA 버튼 */}
+          {/* CTA 버튼 + 보조 링크 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-10 flex w-full justify-center"
+            className="mt-10 flex w-full flex-col items-center gap-4"
           >
             <Link
               href="/form"
               className="w-full rounded-full bg-orange-500 px-10 py-4.5 text-center text-lg font-bold text-white shadow-lg shadow-orange-200/60 transition-all hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-200/80 active:bg-orange-700 sm:w-auto"
             >
               한 번의 요청으로, 100+ 업체 스마트 견적
+            </Link>
+            <Link
+              href="/form"
+              className="flex items-center gap-1.5 text-sm font-semibold text-orange-500 transition-colors hover:text-orange-600"
+            >
+              <Sparkles className="h-4 w-4" />
+              1분 인테리어 결과 미리보기 →
             </Link>
           </motion.div>
 
