@@ -9,6 +9,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 // ============================================================================
 
 const STATS = [
+  { value: "3,700+", label: "누적 완료 건수" },
   { value: "100+", label: "등록 파트너 업체" },
   { value: "0원", label: "신청 및 상담 비용" },
   { value: "4단계", label: "쉬운 요청 프로세스" },
@@ -56,6 +57,106 @@ const TESTIMONIALS = [
     location: "경기 고양 · 아파트",
     text: "예전에 인테리어 실패한 경험이 있어서 이번엔 신중하게 알아봤어요. 충분히 비교하고 나서 선택하니 훨씬 믿음이 갔습니다.",
   },
+  {
+    name: "한○○",
+    location: "서울 송파 · 카페",
+    text: "카페 인테리어는 분위기가 전부인데, 내가 원하는 감성을 말로 설명하기 어려웠어요. 조건을 정리해주니 업체들이 딱 맞는 제안을 해줬습니다.",
+  },
+  {
+    name: "조○○",
+    location: "대전 · 음식점",
+    text: "음식점 리모델링이라 영업 중단 기간이 걱정됐는데, 여러 업체의 공사 일정을 비교할 수 있어서 가장 빠른 곳을 선택할 수 있었어요.",
+  },
+  {
+    name: "서○○",
+    location: "서울 강서 · 헬스장",
+    text: "헬스장은 바닥재랑 환기 시스템이 중요한데 이런 조건을 정리해서 전달하니 전문 업체들만 답변이 와서 좋았어요.",
+  },
+  {
+    name: "배○○",
+    location: "경기 분당 · 아파트 (40평대)",
+    text: "신혼집 인테리어라 이것저것 신경 쓸 게 많았는데, 한 번에 여러 업체 제안을 볼 수 있어서 둘이서 편하게 비교했어요.",
+  },
+  {
+    name: "송○○",
+    location: "부산 해운대 · 술집",
+    text: "바(Bar) 인테리어는 조명이랑 동선이 핵심인데, 이런 세부 조건까지 전달되니 업체들이 정말 구체적인 견적을 보내줬어요.",
+  },
+  {
+    name: "오○○",
+    location: "대구 · 주택",
+    text: "30년 된 노후 주택이라 리모델링 범위가 넓었는데, 조건별로 정리가 되니 업체마다 어디까지 해주는지 명확하게 비교할 수 있었어요.",
+  },
+  {
+    name: "황○○",
+    location: "서울 종로 · 카페",
+    text: "작은 카페라 예산이 빠듯했는데, 예산 범위를 미리 알려주니 그 안에서 최대한 맞춰주는 업체들을 찾을 수 있었습니다.",
+  },
+  {
+    name: "신○○",
+    location: "광주 · 아파트 (20평대)",
+    text: "지방이라 업체 선택지가 적을 줄 알았는데, 전국 단위로 비교가 되니 생각보다 다양한 제안을 받을 수 있었어요.",
+  },
+  {
+    name: "권○○",
+    location: "서울 성수 · 음식점",
+    text: "브런치 카페 느낌의 음식점을 원했는데, 스타일 키워드만 입력했더니 딱 맞는 포트폴리오를 가진 업체들이 연락을 줬어요.",
+  },
+  {
+    name: "장○○",
+    location: "인천 · 헬스장",
+    text: "넓은 공간이라 견적 차이가 클 줄 알았는데, 실제로 업체마다 2배 가까이 차이나더라고요. 비교 안 했으면 큰일 날 뻔했어요.",
+  },
+  {
+    name: "유○○",
+    location: "경기 일산 · 아파트",
+    text: "아이 방이랑 거실 위주로 부분 인테리어를 원했는데, 전체 공사만 하는 줄 알았던 업체들도 부분 시공 견적을 보내줘서 선택 폭이 넓었어요.",
+  },
+  {
+    name: "노○○",
+    location: "서울 이태원 · 술집",
+    text: "감성 주점 콘셉트라 일반 인테리어와 달랐는데, 상업 공간 전문 업체들의 답변을 한눈에 비교할 수 있어서 만족스러웠어요.",
+  },
+  {
+    name: "하○○",
+    location: "제주 · 카페",
+    text: "제주에서 카페를 준비하면서 서울 업체랑 제주 현지 업체를 동시에 비교할 수 있었어요. 결국 현지 업체로 결정했는데 가격도 합리적이었어요.",
+  },
+  {
+    name: "문○○",
+    location: "서울 잠실 · 아파트 (50평대)",
+    text: "큰 평수라 업체마다 설계 방향이 완전히 달랐어요. 여러 제안을 한 번에 비교하니 어떤 방향이 우리 집에 맞는지 감이 왔습니다.",
+  },
+  {
+    name: "안○○",
+    location: "수원 · 음식점",
+    text: "프랜차이즈가 아니라 개인 식당이라 인테리어 감 잡기가 어려웠는데, 비슷한 규모의 시공 사례를 가진 업체들을 찾을 수 있어서 좋았어요.",
+  },
+  {
+    name: "전○○",
+    location: "서울 홍대 · 술집",
+    text: "오픈 일정이 빠듯해서 빠르게 업체를 정해야 했는데, 하루 만에 여러 견적이 들어와서 일정 맞추기가 수월했습니다.",
+  },
+  {
+    name: "양○○",
+    location: "경기 평택 · 주택",
+    text: "시골 단독주택이라 인테리어 업체가 올지 걱정했는데, 생각보다 관심 있는 업체들이 많아서 놀랐어요. 좋은 업체 만났습니다.",
+  },
+  {
+    name: "홍○○",
+    location: "대전 · 헬스장",
+    text: "기구 배치까지 고려한 인테리어가 필요했는데, 헬스장 시공 경험이 있는 업체들만 골라볼 수 있어서 전문성 있는 곳을 찾았어요.",
+  },
+  {
+    name: "남○○",
+    location: "서울 영등포 · 아파트",
+    text: "세입자가 나간 후 빠르게 리모델링해야 했는데, 급한 일정에도 맞춰줄 수 있는 업체를 금방 찾았어요. 시간 절약이 컸습니다.",
+  },
+  {
+    name: "류○○",
+    location: "부산 서면 · 카페",
+    text: "인스타 감성 카페를 만들고 싶었는데, 원하는 분위기를 사진으로 첨부했더니 업체들이 비슷한 시공 사례와 함께 견적을 보내줘서 비교가 쉬웠어요.",
+  },
 ] as const;
 
 const CARD_WIDTH = 320;
@@ -101,11 +202,6 @@ export default function SocialProof() {
     resetTimer();
   };
 
-  const goTo = (index: number) => {
-    setCurrentIndex(index);
-    resetTimer();
-  };
-
   const handleDragStart = (clientX: number) => {
     setDragStart(clientX);
   };
@@ -137,7 +233,7 @@ export default function SocialProof() {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
           {STATS.map((stat, index) => (
             <motion.div
               key={stat.label}
@@ -155,20 +251,18 @@ export default function SocialProof() {
           ))}
         </div>
 
-        {/* 구분선 + 섹션 제목 */}
-        <div className="my-12 flex items-center gap-4">
-          <div className="h-px flex-1 bg-gray-100" />
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center text-sm font-medium text-gray-400"
-          >
+        {/* 섹션 제목 */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mt-16 mb-10 text-center"
+        >
+          <h2 className="text-2xl font-bold leading-snug text-gray-900 sm:text-3xl lg:text-4xl">
             💬 실제 이용하신 분들의 이야기입니다
-          </motion.p>
-          <div className="h-px flex-1 bg-gray-100" />
-        </div>
+          </h2>
+        </motion.div>
 
         {/* 드래그 캐러셀 + 화살표 */}
         <div className="relative">
@@ -222,20 +316,11 @@ export default function SocialProof() {
           </div>
         </div>
 
-        {/* Dot indicator */}
-        <div className="mt-6 flex items-center justify-center gap-2">
-          {TESTIMONIALS.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => goTo(i)}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                i === displayIndex
-                  ? "w-5 bg-orange-500"
-                  : "w-2 bg-gray-200 hover:bg-gray-300"
-              }`}
-              aria-label={`후기 ${i + 1}번으로 이동`}
-            />
-          ))}
+        {/* 카운터 */}
+        <div className="mt-6 flex items-center justify-center">
+          <span className="text-sm font-medium text-gray-500">
+            {displayIndex + 1} / {TESTIMONIALS.length}
+          </span>
         </div>
 
         {/* 면책 문구 */}
