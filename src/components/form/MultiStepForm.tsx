@@ -100,6 +100,8 @@ function validateStep(step: number, formData: FormData): string | null {
   if (step === 5) {
     if (!formData.name.trim()) return "이름을 입력해주세요.";
     if (!formData.phone.trim()) return "연락처를 입력해주세요.";
+    if (!formData.email.trim()) return "이메일을 입력해주세요.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) return "올바른 이메일 형식으로 입력해주세요.";
     if (!formData.agreePrivacy) return "개인정보 수집 및 이용에 동의해주세요.";
     if (!formData.agreeConsult) return "상담 진행을 위한 연락 수신에 동의해주세요.";
   }

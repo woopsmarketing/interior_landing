@@ -40,13 +40,7 @@ function CheckboxItem({
         >
           {checked && (
             <svg className="h-3 w-3 text-white" viewBox="0 0 12 12" fill="none">
-              <path
-                d="M2 6L5 9L10 3"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+              <path d="M2 6L5 9L10 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           )}
         </div>
@@ -60,7 +54,7 @@ function CheckboxItem({
             </span>
           )}
         </p>
-        {subLabel && <p className="mt-0.5 text-xs text-gray-500">{subLabel}</p>}
+        {subLabel && <p className="mt-0.5 text-xs text-gray-500 leading-relaxed">{subLabel}</p>}
       </div>
     </label>
   );
@@ -98,13 +92,7 @@ function ChipMulti({
             />
             {isChecked && (
               <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 14 14" fill="none">
-                <path
-                  d="M2.5 7L5.5 10L11.5 4"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
+                <path d="M2.5 7L5.5 10L11.5 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             )}
             {opt}
@@ -123,16 +111,40 @@ function formatPhone(value: string): string {
 }
 
 export default function Step5({ formData, onChange, onMultiChange }: Step5Props) {
+  const allAgreed = formData.agreePrivacy && formData.agreeConsult && formData.agreeMarketing;
+
+  const handleAgreeAll = (checked: boolean) => {
+    onChange("agreePrivacy", checked);
+    onChange("agreeConsult", checked);
+    onChange("agreeMarketing", checked);
+  };
+
   return (
     <div className="space-y-5">
+
       {/* 서비스 흐름 안내 */}
-      <div className="rounded-xl bg-blue-50 border border-blue-100 px-4 py-4 space-y-2">
-        <p className="text-sm font-semibold text-blue-800">이렇게 진행됩니다</p>
-        <ol className="space-y-1.5 text-xs text-blue-700 leading-relaxed">
-          <li className="flex gap-2"><span className="font-bold shrink-0">1.</span>요청 내용을 보고 관심 있는 업체들이 이메일로 견적 제안을 보내드립니다.</li>
-          <li className="flex gap-2"><span className="font-bold shrink-0">2.</span>받은 제안들을 비교해보신 후, <span className="font-semibold">마음에 드는 업체만 직접 선택</span>하시면 됩니다.</li>
-          <li className="flex gap-2"><span className="font-bold shrink-0">3.</span>선택하지 않으면 아무 의무도 없습니다.</li>
-        </ol>
+      <div className="rounded-xl bg-blue-50 border border-blue-100 px-4 py-4">
+        <p className="text-sm font-semibold text-blue-800 mb-3">이렇게 진행됩니다</p>
+        <div className="space-y-3">
+          <div className="flex gap-3">
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-200 text-xs font-bold text-blue-700">1</span>
+            <p className="text-xs text-blue-700 leading-relaxed">
+              요청 내용을 보고 관심 있는 업체들이 <strong>이메일로 견적 제안</strong>을 보내드립니다.
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-200 text-xs font-bold text-blue-700">2</span>
+            <p className="text-xs text-blue-700 leading-relaxed">
+              받은 제안들을 비교해보신 후, <strong>마음에 드는 업체만 직접 선택</strong>하시면 됩니다.
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-200 text-xs font-bold text-blue-700">3</span>
+            <p className="text-xs text-blue-700 leading-relaxed">
+              선택은 여러분의 자유입니다. <strong>꼭 업체를 고르시지 않으셔도 됩니다.</strong>
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* 이름 */}
@@ -208,33 +220,70 @@ export default function Step5({ formData, onChange, onMultiChange }: Step5Props)
 
       {/* 동의 항목 */}
       <div className="space-y-2.5">
+        {/* 개인정보 안내 + 모두 동의 */}
+        <div className="rounded-xl bg-gray-50 border border-gray-200 px-4 py-3">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold text-gray-700">개인정보 안내</p>
+              <p className="mt-0.5 text-xs text-gray-500 leading-relaxed">
+                견적 요청 목적만을 위해 수집되며, 귀하의 정보는 안전하게 보관됩니다.
+              </p>
+            </div>
+            <label className="flex shrink-0 cursor-pointer items-center gap-2">
+              <span className="text-xs font-semibold text-orange-600 whitespace-nowrap">모두 동의</span>
+              <div className="relative">
+                <input
+                  type="checkbox"
+                  checked={allAgreed}
+                  onChange={(e) => handleAgreeAll(e.target.checked)}
+                  className="sr-only"
+                />
+                <div className={`flex h-5 w-5 items-center justify-center rounded border-2 transition-colors ${
+                  allAgreed ? "border-orange-500 bg-orange-500" : "border-gray-300 bg-white"
+                }`}>
+                  {allAgreed && (
+                    <svg className="h-3 w-3 text-white" viewBox="0 0 12 12" fill="none">
+                      <path d="M2 6L5 9L10 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+
         <CheckboxItem
           checked={formData.agreePrivacy}
           onChange={(v) => onChange("agreePrivacy", v)}
           label="개인정보 수집 및 이용 동의"
-          subLabel="이름, 연락처 등 입력하신 정보를 견적 요청 목적으로 수집합니다."
+          subLabel="이름, 연락처, 이메일 등 입력하신 정보를 견적 요청 목적으로 수집합니다."
           required={true}
         />
         <CheckboxItem
           checked={formData.agreeConsult}
           onChange={(v) => onChange("agreeConsult", v)}
           label="상담 진행을 위한 연락 수신 동의"
-          subLabel="등록된 인테리어 업체가 요청 내용을 바탕으로 연락드릴 수 있습니다."
+          subLabel="등록된 인테리어 업체가 요청 내용을 바탕으로 이메일로 제안서를 보낼 수 있습니다."
           required={true}
         />
         <CheckboxItem
           checked={formData.agreeMarketing}
           onChange={(v) => onChange("agreeMarketing", v)}
-          label="이벤트/프로모션/포트폴리오 안내 수신 동의"
+          label="이벤트/프로모션 안내 수신 동의"
+          subLabel="다양한 할인쿠폰, 시공 이벤트, 프로모션 등의 혜택 정보를 이메일로 받아보실 수 있습니다."
           required={false}
         />
       </div>
 
-      <div className="rounded-xl bg-orange-50 border border-orange-100 px-4 py-3.5">
-        <p className="text-sm text-orange-800 leading-relaxed text-center">
-          꼭 계약하지 않아도 됩니다. 비교 후 원하시는 경우에만 선택하시면 됩니다.
+      {/* 하단 안심 문구 */}
+      <div className="rounded-xl bg-orange-50 border border-orange-100 px-4 py-3.5 text-center">
+        <p className="text-sm font-semibold text-orange-700">계약 의무 없음</p>
+        <p className="mt-0.5 text-xs text-orange-600 leading-relaxed">
+          제안을 받아보신 후 마음에 드는 업체를 직접 고르시면 됩니다.<br />
+          원하지 않으시면 언제든지 무시하셔도 됩니다.
         </p>
       </div>
+
     </div>
   );
 }
