@@ -125,9 +125,15 @@ function formatPhone(value: string): string {
 export default function Step5({ formData, onChange, onMultiChange }: Step5Props) {
   return (
     <div className="space-y-5">
-      <p className="text-sm text-gray-500 leading-relaxed">
-        연락처를 입력하시면 상담 신청이 완료됩니다.
-      </p>
+      {/* 서비스 흐름 안내 */}
+      <div className="rounded-xl bg-blue-50 border border-blue-100 px-4 py-4 space-y-2">
+        <p className="text-sm font-semibold text-blue-800">이렇게 진행됩니다</p>
+        <ol className="space-y-1.5 text-xs text-blue-700 leading-relaxed">
+          <li className="flex gap-2"><span className="font-bold shrink-0">1.</span>요청 내용을 보고 관심 있는 업체들이 이메일로 견적 제안을 보내드립니다.</li>
+          <li className="flex gap-2"><span className="font-bold shrink-0">2.</span>받은 제안들을 비교해보신 후, <span className="font-semibold">마음에 드는 업체만 직접 선택</span>하시면 됩니다.</li>
+          <li className="flex gap-2"><span className="font-bold shrink-0">3.</span>선택하지 않으면 아무 의무도 없습니다.</li>
+        </ol>
+      </div>
 
       {/* 이름 */}
       <div>
@@ -157,12 +163,11 @@ export default function Step5({ formData, onChange, onMultiChange }: Step5Props)
         />
       </div>
 
-      {/* 이메일 (선택) */}
+      {/* 이메일 (필수) */}
       <div>
-        <div className="flex items-baseline justify-between mb-1.5">
-          <label className="text-sm font-medium text-gray-700">이메일</label>
-          <span className="text-xs text-gray-400">선택사항</span>
-        </div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          이메일 <span className="text-orange-500">*</span>
+        </label>
         <input
           type="email"
           value={formData.email}
@@ -170,6 +175,7 @@ export default function Step5({ formData, onChange, onMultiChange }: Step5Props)
           placeholder="example@email.com"
           className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 transition-colors"
         />
+        <p className="mt-1.5 text-xs text-gray-400">업체 제안서가 이 이메일로 전달됩니다.</p>
       </div>
 
       {/* 상담 희망 방식 */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import Step1 from "./steps/Step1";
 import Step2 from "./steps/Step2";
@@ -119,8 +119,16 @@ export default function MultiStepForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [generationError, setGenerationError] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<Record<string, unknown> | null>(null);
+  const [isDebugOpen, setIsDebugOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
+  const [loadingStep, setLoadingStep] = useState<"step1" | "step2" | "step3">("step1");
+  const [elapsed, setElapsed] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const startTimeRef = useRef(0);
 
   const handleChange = (field: keyof FormData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -168,31 +176,112 @@ export default function MultiStepForm() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const validationError = validateStep(5, formData);
     if (validationError) {
       setError(validationError);
       return;
     }
     setError(null);
+
+    // 공간 사진 없으면 AI 생성 없이 바로 완료
+    if (!formData.spacePhoto) {
+      setIsSubmitted(true);
+      return;
+    }
+
     setIsLoading(true);
-    setTimeout(() => {
+    setLoadingStep("step1");
+    setElapsed(0);
+    startTimeRef.current = Date.now();
+    timerRef.current = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - startTimeRef.current) / 1000));
+    }, 1000);
+
+    // 로딩 스텝 전환 (서버 처리 시간 추정)
+    const hasRef = !!formData.referenceImage;
+    setTimeout(() => setLoadingStep(hasRef ? "step2" : "step3"), 8000);
+    if (hasRef) setTimeout(() => setLoadingStep("step3"), 13000);
+
+    try {
+      const body = new FormData();
+      body.append("spacePhoto", formData.spacePhoto);
+      if (formData.referenceImage) body.append("referenceImage", formData.referenceImage);
+      body.append("priorities", JSON.stringify(formData.priorities));
+      body.append("preferredStyles", JSON.stringify(formData.preferredStyles));
+      body.append("preferredAtmosphere", formData.preferredAtmosphere);
+      body.append("additionalRequest", formData.additionalRequest);
+      body.append("spaceType", formData.spaceType);
+      body.append("area", formData.area);
+      body.append("budget", formData.budget);
+
+      const res = await fetch("/api/generate-interior", { method: "POST", body });
+      const data = await res.json();
+
+      if (data.imageBase64) {
+        setGeneratedImage(data.imageBase64);
+        if (data.debug) setDebugInfo(data.debug);
+      } else {
+        setGenerationError(data.error ?? "이미지 생성에 실패했습니다.");
+      }
+    } catch {
+      setGenerationError("네트워크 오류가 발생했습니다.");
+    } finally {
+      if (timerRef.current) clearInterval(timerRef.current);
       setIsLoading(false);
       setIsSubmitted(true);
-    }, 2000);
+    }
   };
 
   if (isLoading) {
+    const LOADING_STEPS = [
+      { key: "step1", label: "공간 구조 분석 중", desc: "AI가 공간의 구조와 특징을 파악합니다" },
+      { key: "step2", label: "참고 이미지 스타일 분석 중", desc: "원하시는 색상과 분위기를 추출합니다" },
+      { key: "step3", label: "인테리어 이미지 생성 중", desc: "분석 결과를 바탕으로 완성본을 만듭니다" },
+    ] as const;
+    const hasRef = !!formData.referenceImage;
+    const visibleSteps = hasRef ? LOADING_STEPS : [LOADING_STEPS[0], LOADING_STEPS[2]];
+    const currentIdx = visibleSteps.findIndex((s) => s.key === loadingStep);
+
     return (
       <div id="form" className="w-full max-w-lg mx-auto">
-        <div className="rounded-2xl bg-white shadow-lg shadow-gray-100/60 border border-gray-100 px-6 py-16 sm:px-10 text-center">
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50">
-            <div className="h-8 w-8 animate-spin rounded-full border-3 border-orange-200 border-t-orange-500" style={{ borderWidth: "3px" }} />
+        <div className="rounded-2xl bg-white shadow-lg shadow-gray-100/60 border border-gray-100 px-6 py-10 sm:px-10">
+          <div className="text-center mb-8">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50">
+              <div className="h-8 w-8 animate-spin rounded-full border-orange-200 border-t-orange-500" style={{ borderWidth: "3px" }} />
+            </div>
+            <p className="text-base font-semibold text-gray-800">인테리어 미리보기 생성 중</p>
+            <p className="mt-1 text-sm text-gray-400">{elapsed}초 경과 · 약 {hasRef ? "50~70" : "30~45"}초 소요</p>
           </div>
-          <p className="text-base font-semibold text-gray-800 animate-pulse">
-            완성된 인테리어 미리보기를 생성 중입니다...
-          </p>
-          <p className="mt-2 text-sm text-gray-400">잠시만 기다려주세요</p>
+
+          <ol className="space-y-3">
+            {visibleSteps.map((s, i) => {
+              const isDone = i < currentIdx;
+              const isActive = i === currentIdx;
+              return (
+                <li key={s.key} className={`flex items-start gap-3 rounded-xl px-4 py-3 transition-colors ${
+                  isActive ? "bg-orange-50 border border-orange-100" : isDone ? "bg-gray-50" : "bg-gray-50 opacity-40"
+                }`}>
+                  <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                    isDone ? "bg-orange-500 text-white" : isActive ? "bg-orange-100 text-orange-600" : "bg-gray-200 text-gray-400"
+                  }`}>
+                    {isDone ? (
+                      <svg className="h-3 w-3" viewBox="0 0 10 10" fill="none">
+                        <path d="M2 5L4.5 7.5L8 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    ) : i + 1}
+                  </span>
+                  <div>
+                    <p className={`text-sm font-medium ${isActive ? "text-orange-700" : isDone ? "text-gray-500" : "text-gray-400"}`}>
+                      {s.label}
+                      {isActive && <span className="ml-1.5 animate-pulse">...</span>}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-0.5">{s.desc}</p>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
         </div>
       </div>
     );
@@ -209,7 +298,7 @@ export default function MultiStepForm() {
           >
             <div className="relative w-full h-full max-w-5xl mx-auto flex items-center justify-center p-4">
               <Image
-                src="/after.jpg"
+                src={generatedImage ? `data:image/png;base64,${generatedImage}` : "/after.jpg"}
                 alt="예상 완성 인테리어 이미지"
                 fill
                 className="object-contain"
@@ -232,31 +321,40 @@ export default function MultiStepForm() {
 
         <div className="rounded-2xl bg-white shadow-lg shadow-gray-100/60 border border-gray-100 overflow-hidden">
           {/* AI 생성 인테리어 이미지 */}
-          <div
-            className="relative w-full aspect-video cursor-zoom-in group"
-            onClick={() => setIsLightboxOpen(true)}
-          >
-            <Image
-              src="/after.jpg"
-              alt="예상 완성 인테리어 이미지"
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-            <span className="absolute top-3 left-3 rounded-full bg-orange-500/90 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
-              예상 완성 인테리어 이미지
-            </span>
-            {/* 확대 힌트 아이콘 */}
-            <div className="absolute top-3 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/30 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 backdrop-blur-sm">
-              <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M3 8V3m0 0h5M3 3l6 6m8-6h-5m5 0v5m0-5l-6 6M3 17v-5m0 5h5m-5 0l6-6m8 6l-6-6m6 6v-5m0 5h-5" />
-              </svg>
+          {generationError ? (
+            <div className="px-6 py-6 bg-red-50 border-b border-red-100 text-center">
+              <p className="text-sm font-medium text-red-600 mb-1">이미지 생성 오류</p>
+              <p className="text-xs text-red-400">{generationError}</p>
             </div>
-          </div>
-          {/* 이미지 하단 면책 문구 */}
-          <p className="px-4 py-2 text-center text-xs text-gray-400 bg-gray-50 border-b border-gray-100">
-            해당 이미지는 AI가 만든 이미지이므로 실제 결과물과 다를 수 있습니다.
-          </p>
+          ) : (
+            <>
+              <div
+                className="relative w-full aspect-video cursor-zoom-in group"
+                onClick={() => setIsLightboxOpen(true)}
+              >
+                <Image
+                  src={generatedImage ? `data:image/png;base64,${generatedImage}` : "/after.jpg"}
+                  alt="예상 완성 인테리어 이미지"
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                <span className="absolute top-3 left-3 rounded-full bg-orange-500/90 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+                  예상 완성 인테리어 이미지
+                </span>
+                {/* 확대 힌트 아이콘 */}
+                <div className="absolute top-3 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/30 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 backdrop-blur-sm">
+                  <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M3 8V3m0 0h5M3 3l6 6m8-6h-5m5 0v5m0-5l-6 6M3 17v-5m0 5h5m-5 0l6-6m8 6l-6-6m6 6v-5m0 5h-5" />
+                  </svg>
+                </div>
+              </div>
+              {/* 이미지 하단 면책 문구 */}
+              <p className="px-4 py-2 text-center text-xs text-gray-400 bg-gray-50 border-b border-gray-100">
+                해당 이미지는 AI가 만든 이미지이므로 실제 결과물과 다를 수 있습니다.
+              </p>
+            </>
+          )}
 
           <div className="px-6 py-8 sm:px-10 text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-orange-100">
@@ -292,6 +390,62 @@ export default function MultiStepForm() {
                 ))}
               </ol>
             </div>
+
+            {/* 디버그 패널 */}
+            {debugInfo && (
+              <div className="mt-5">
+                <button
+                  type="button"
+                  onClick={() => setIsDebugOpen((v) => !v)}
+                  className="flex w-full items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-left text-xs font-medium text-gray-500 hover:bg-gray-100 transition-colors"
+                >
+                  <span className="flex items-center gap-2">
+                    <svg className="h-3.5 w-3.5 text-gray-400" viewBox="0 0 16 16" fill="currentColor">
+                      <path d="M6.5 1a.5.5 0 000 1h3a.5.5 0 000-1h-3zM11 2.5v1h1a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2v-7a2 2 0 012-2h1v-1H4a3 3 0 00-3 3v7a3 3 0 003 3h8a3 3 0 003-3v-7a3 3 0 00-3-3h-1zM8 7a.5.5 0 01.5.5v2.793l1.146-1.147a.5.5 0 01.708.708l-2 2a.5.5 0 01-.708 0l-2-2a.5.5 0 01.708-.708L7.5 10.293V7.5A.5.5 0 018 7z" />
+                    </svg>
+                    AI 프롬프트 디버그 정보
+                  </span>
+                  <svg
+                    className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isDebugOpen ? "rotate-180" : ""}`}
+                    viewBox="0 0 16 16" fill="currentColor"
+                  >
+                    <path d="M1.646 4.646a.5.5 0 01.708 0L8 10.293l5.646-5.647a.5.5 0 01.708.708l-6 6a.5.5 0 01-.708 0l-6-6a.5.5 0 010-.708z" />
+                  </svg>
+                </button>
+                {isDebugOpen && (
+                  <div className="mt-2 rounded-xl border border-gray-200 bg-gray-50 overflow-hidden">
+                    <div className="border-b border-gray-200 px-4 py-2.5 bg-white">
+                      <div className="flex flex-wrap gap-2 text-xs">
+                        <span className="rounded-full bg-blue-50 px-2.5 py-0.5 font-medium text-blue-600">
+                          model: {String(debugInfo.model)}
+                        </span>
+                        <span className="rounded-full bg-purple-50 px-2.5 py-0.5 font-medium text-purple-600">
+                          mode: {String(debugInfo.mode)}
+                        </span>
+                        <span className={`rounded-full px-2.5 py-0.5 font-medium ${debugInfo.hasSpacePhoto ? "bg-green-50 text-green-600" : "bg-gray-100 text-gray-400"}`}>
+                          spacePhoto: {debugInfo.hasSpacePhoto ? "✓" : "✗"}
+                        </span>
+                        <span className={`rounded-full px-2.5 py-0.5 font-medium ${debugInfo.hasReferenceImage ? "bg-green-50 text-green-600" : "bg-gray-100 text-gray-400"}`}>
+                          referenceImage: {debugInfo.hasReferenceImage ? "✓" : "✗"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="px-4 py-3">
+                      <p className="mb-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Prompt</p>
+                      <p className="text-xs text-gray-700 leading-relaxed font-mono whitespace-pre-wrap break-all bg-white rounded-lg border border-gray-100 px-3 py-2">
+                        {String(debugInfo.prompt)}
+                      </p>
+                    </div>
+                    <div className="border-t border-gray-200 px-4 py-3">
+                      <p className="mb-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Raw Inputs</p>
+                      <pre className="text-xs text-gray-600 leading-relaxed overflow-x-auto bg-white rounded-lg border border-gray-100 px-3 py-2">
+                        {JSON.stringify(debugInfo.inputs, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

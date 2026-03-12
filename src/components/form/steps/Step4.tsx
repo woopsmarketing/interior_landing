@@ -104,12 +104,19 @@ export default function Step4({ formData, onFileChange, onChange }: Step4Props) 
         onFileChange={(file) => onFileChange("spacePhoto", file)}
       />
 
-      <FileUploadArea
-        label="참고/감성 이미지"
-        hint="원하는 분위기와 비슷한 이미지를 올려주시면 스타일 제안에 도움이 됩니다"
-        file={formData.referenceImage}
-        onFileChange={(file) => onFileChange("referenceImage", file)}
-      />
+      {/* 참고 이미지: 공간 사진 있을 때만 활성화 */}
+      <div className={!formData.spacePhoto ? "opacity-50 pointer-events-none" : ""}>
+        <FileUploadArea
+          label="참고/감성 이미지"
+          hint={
+            formData.spacePhoto
+              ? "원하는 분위기와 비슷한 이미지를 올려주시면 색상·분위기 반영에 도움이 됩니다"
+              : "현재 공간 이미지를 먼저 업로드해야 사용할 수 있습니다"
+          }
+          file={formData.referenceImage}
+          onFileChange={(file) => onFileChange("referenceImage", file)}
+        />
+      </div>
 
       {/* 추가 요청사항 */}
       <div>
