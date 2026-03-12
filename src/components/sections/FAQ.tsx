@@ -150,7 +150,7 @@ export default function FAQ() {
             href="/form"
             className="rounded-full bg-orange-500 px-8 py-4 text-base font-semibold text-white transition-colors hover:bg-orange-600 active:bg-orange-700"
           >
-            무료 견적 요청하기
+            궁금한 점 업체에 직접 여쭈어보기
           </Link>
         </motion.div>
       </div>

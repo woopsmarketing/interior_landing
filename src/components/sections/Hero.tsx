@@ -88,25 +88,19 @@ export default function Hero() {
             </p>
           </motion.div>
 
-          {/* CTA 버튼 2개 */}
+          {/* CTA 버튼 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-10 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-center"
+            className="mt-10 flex w-full justify-center"
           >
             <Link
               href="/form"
-              className="w-full rounded-full bg-orange-500 px-10 py-4.5 text-lg font-bold text-white shadow-lg shadow-orange-200/60 transition-all hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-200/80 active:bg-orange-700 sm:w-auto"
+              className="w-full rounded-full bg-orange-500 px-10 py-4.5 text-center text-lg font-bold text-white shadow-lg shadow-orange-200/60 transition-all hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-200/80 active:bg-orange-700 sm:w-auto"
             >
-              한 번 작성하면, 100개 업체가 먼저 답변합니다
+              한 번의 요청으로, 100+ 업체 스마트 견적
             </Link>
-            <button
-              onClick={handleSecondaryCtaClick}
-              className="w-full rounded-full border-2 border-gray-300 bg-white/80 px-8 py-4 text-base font-semibold text-gray-700 backdrop-blur-sm transition-colors hover:border-gray-400 hover:bg-gray-50 sm:w-auto"
-            >
-              어떻게 진행되나요?
-            </button>
           </motion.div>
 
           {/* 보조 신뢰 배지 */}
