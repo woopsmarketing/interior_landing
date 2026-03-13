@@ -21,19 +21,19 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white">
       <Header />
-      <Hero />
-      <QuickBenefits />
-      <BeforeAfter />
-      <Problem />
-      <CoreValue />
-      <ComparisonTable />
-      <HowItWorks />
-      <SocialProof />
-      <WhoFor />
-      <Outcomes />
-      <Trust />
-      <FAQ />
-      <FinalCTA />
+      <div id="hero"><Hero /></div>
+      <div id="benefits"><QuickBenefits /></div>
+      <div id="before-after"><BeforeAfter /></div>
+      <div id="problem"><Problem /></div>
+      <div id="service"><CoreValue /></div>
+      <div id="compare"><ComparisonTable /></div>
+      <div id="how"><HowItWorks /></div>
+      <div id="review"><SocialProof /></div>
+      <div id="who"><WhoFor /></div>
+      <div id="outcome"><Outcomes /></div>
+      <div id="trust"><Trust /></div>
+      <div id="faq"><FAQ /></div>
+      <div id="apply"><FinalCTA /></div>
     </main>
   );
 }

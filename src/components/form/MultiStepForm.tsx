@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Step1 from "./steps/Step1";
 import Step2 from "./steps/Step2";
 import Step3 from "./steps/Step3";
 import Step4 from "./steps/Step4";
 import Step5 from "./steps/Step5";
+import { trackFormStart, trackStepComplete, trackFormSubmit, trackAIImageGenerated, captureUtmParams } from "@/lib/tracking";
 
 export interface FormData {
   // Step 1 - 공간 기본 정보
@@ -132,6 +133,11 @@ export default function MultiStepForm() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef(0);
 
+  useEffect(() => {
+    trackFormStart();
+    captureUtmParams();
+  }, []);
+
   const handleChange = (field: keyof FormData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setError(null);
@@ -166,6 +172,7 @@ export default function MultiStepForm() {
       return;
     }
     setError(null);
+    trackStepComplete(currentStep);
     if (currentStep < TOTAL_STEPS) {
       transitionStep(currentStep + 1, "forward");
     }
@@ -185,6 +192,8 @@ export default function MultiStepForm() {
       return;
     }
     setError(null);
+
+    trackFormSubmit();
 
     // 공간 사진 없으면 AI 생성 없이 바로 완료
     if (!formData.spacePhoto) {
@@ -222,6 +231,7 @@ export default function MultiStepForm() {
 
       if (data.imageBase64) {
         setGeneratedImage(data.imageBase64);
+        trackAIImageGenerated();
         if (data.debug) setDebugInfo(data.debug);
       } else {
         setGenerationError(data.error ?? "이미지 생성에 실패했습니다.");

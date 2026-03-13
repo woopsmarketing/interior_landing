@@ -33,3 +33,6 @@ Thumbs.db
 .agents/
 .claude/
 skills-lock.json
+
+# Marketing assets (generated/source files)
+marketing/assets/
