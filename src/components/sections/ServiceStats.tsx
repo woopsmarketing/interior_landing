@@ -12,20 +12,8 @@ const STATS = [
 
 export default function ServiceStats() {
   return (
-    <section className="w-full bg-white px-5 py-20 sm:px-8 sm:py-24 lg:px-12">
+    <section className="w-full bg-white px-5 pb-2 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-5xl">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-4 text-center"
-        >
-          <h2 className="text-2xl font-bold leading-snug text-gray-900 sm:text-3xl">
-            수치로 확인하는 서비스
-          </h2>
-        </motion.div>
-
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
           {STATS.map((stat, index) => (
             <motion.div
