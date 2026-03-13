@@ -114,7 +114,7 @@ export default function AboutPage() {
           <h1 className="text-3xl font-extrabold leading-tight text-gray-900 sm:text-4xl lg:text-5xl">
             왜 <span className="text-orange-500">무료</span>인가요?
           </h1>
-          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-gray-600 sm:text-lg">
+          <p className="mx-auto mt-5 max-w-xl text-lg font-550 leading-relaxed text-gray-600 sm:text-xl">
             이 플랫폼은 고객과 업체 모두에게 수수료를 받지 않습니다.
             <br className="hidden sm:block" />
             좋은 매칭이 더 많은 고객과 업체를 만들어준다고 믿기 때문입니다.
@@ -128,7 +128,7 @@ export default function AboutPage() {
           {STATS.map((s) => (
             <div key={s.label} className="px-4 py-8 text-center sm:py-10">
               <p className="text-2xl font-extrabold text-orange-500 sm:text-3xl">{s.value}</p>
-              <p className="mt-1 text-xs text-gray-500 sm:text-sm">{s.label}</p>
+              <p className="mt-1 text-sm font-550 text-gray-500 sm:text-base">{s.label}</p>
             </div>
           ))}
         </div>
@@ -139,7 +139,7 @@ export default function AboutPage() {
         <h2 className="mb-4 text-center text-sm font-bold uppercase tracking-widest text-orange-500">
           Difference
         </h2>
-        <p className="mb-12 text-center text-2xl font-bold text-gray-900 sm:text-3xl">
+        <p className="mb-12 text-center text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
           다른 플랫폼과 무엇이 다른가요?
         </p>
 
@@ -151,8 +151,8 @@ export default function AboutPage() {
                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
             </div>
-            <h3 className="mb-3 text-base font-bold text-gray-700">일반 인테리어 중개 플랫폼</h3>
-            <ul className="space-y-2.5 text-sm text-gray-500">
+            <h3 className="mb-3 text-lg font-bold text-gray-700">일반 인테리어 중개 플랫폼</h3>
+            <ul className="space-y-2.5 text-base font-550 text-gray-500">
               <li className="flex items-start gap-2">
                 <span className="mt-1 shrink-0 text-gray-400">&#8226;</span>
                 업체와 협력 계약을 맺고 고객을 매칭
@@ -179,8 +179,8 @@ export default function AboutPage() {
                 <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
               </svg>
             </div>
-            <h3 className="mb-3 text-base font-bold text-gray-900">이 플랫폼의 방식</h3>
-            <ul className="space-y-2.5 text-sm text-gray-700">
+            <h3 className="mb-3 text-lg font-bold text-gray-900">이 플랫폼의 방식</h3>
+            <ul className="space-y-2.5 text-base font-550 text-gray-700">
               <li className="flex items-start gap-2">
                 <span className="mt-1 shrink-0 text-orange-500">&#10003;</span>
                 업체에게 수수료를 받지 않음 → 순수 매칭만 제공
@@ -201,7 +201,7 @@ export default function AboutPage() {
           </div>
         </div>
 
-        <p className="mt-8 text-center text-sm leading-relaxed text-gray-500">
+        <p className="mt-8 text-center text-base font-550 leading-relaxed text-gray-500">
           수수료 기반 구조에서는 업체가 수수료만큼 견적을 올릴 수밖에 없습니다.
           <br />
           이 플랫폼은 그 구조 자체를 없앰으로써, 고객이 실제로 합리적인 가격에 좋은 업체를 만날 수 있도록 설계했습니다.
@@ -214,7 +214,7 @@ export default function AboutPage() {
           <h2 className="mb-4 text-center text-sm font-bold uppercase tracking-widest text-orange-500">
             Our Values
           </h2>
-          <p className="mb-12 text-center text-2xl font-bold text-gray-900 sm:text-3xl">
+          <p className="mb-12 text-center text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
             이 플랫폼이 지키는 원칙
           </p>
           <div className="grid gap-8 sm:grid-cols-2">
@@ -227,7 +227,7 @@ export default function AboutPage() {
                   {v.icon}
                 </div>
                 <h3 className="mb-2 text-lg font-bold text-gray-900">{v.title}</h3>
-                <p className="text-sm leading-relaxed text-gray-600">{v.desc}</p>
+                <p className="text-base font-550 leading-relaxed text-gray-600">{v.desc}</p>
               </div>
             ))}
           </div>
@@ -237,7 +237,7 @@ export default function AboutPage() {
       {/* 수수료 구조 설명 */}
       <section>
         <div className="mx-auto max-w-3xl px-5 py-16 sm:py-24">
-          <h2 className="mb-10 text-center text-2xl font-bold text-gray-900 sm:text-3xl">
+          <h2 className="mb-10 text-center text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
             수수료 구조를 투명하게 공개합니다
           </h2>
           <div className="grid gap-5 sm:grid-cols-2">
@@ -248,9 +248,9 @@ export default function AboutPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                 </svg>
               </div>
-              <p className="text-sm font-semibold text-gray-500">고객이 내는 비용</p>
+              <p className="text-base font-550 text-gray-500">고객이 내는 비용</p>
               <p className="mt-1 text-4xl font-black text-orange-500">0원</p>
-              <p className="mt-3 text-xs leading-relaxed text-gray-500">
+              <p className="mt-3 text-sm font-550 leading-relaxed text-gray-500">
                 견적 요청, 업체 비교, AI 미리보기
                 <br />
                 모든 서비스가 무료입니다
@@ -263,16 +263,16 @@ export default function AboutPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3H21m-3.75 3H21" />
                 </svg>
               </div>
-              <p className="text-sm font-semibold text-gray-500">업체가 내는 수수료</p>
+              <p className="text-base font-550 text-gray-500">업체가 내는 수수료</p>
               <p className="mt-1 text-4xl font-black text-orange-500">0원</p>
-              <p className="mt-3 text-xs leading-relaxed text-gray-500">
+              <p className="mt-3 text-sm font-550 leading-relaxed text-gray-500">
                 등록비, 중개 수수료, 성사 수수료
                 <br />
                 업체에게도 비용을 받지 않습니다
               </p>
             </div>
           </div>
-          <p className="mt-8 text-center text-sm leading-relaxed text-gray-500">
+          <p className="mt-8 text-center text-base font-550 leading-relaxed text-gray-500">
             수수료를 받지 않기 때문에 업체는 견적에 수수료를 얹지 않아도 됩니다.
             <br />
             고객은 더 합리적인 가격으로, 업체는 실력으로 승부할 수 있는 구조입니다.
@@ -286,7 +286,7 @@ export default function AboutPage() {
           <h2 className="mb-4 text-center text-sm font-bold uppercase tracking-widest text-orange-500">
             Verification
           </h2>
-          <p className="mb-10 text-center text-2xl font-bold text-gray-900 sm:text-3xl">
+          <p className="mb-10 text-center text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
             업체 선별 기준
           </p>
           <div className="space-y-4">
@@ -320,8 +320,8 @@ export default function AboutPage() {
                   {item.num}
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-gray-900">{item.title}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-gray-500">{item.desc}</p>
+                  <h3 className="text-base font-bold text-gray-900">{item.title}</h3>
+                  <p className="mt-1 text-base font-550 leading-relaxed text-gray-500">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -331,7 +331,7 @@ export default function AboutPage() {
 
       {/* 이용 흐름 */}
       <section className="mx-auto max-w-3xl px-5 py-16 sm:py-24">
-        <h2 className="mb-12 text-center text-2xl font-bold text-gray-900 sm:text-3xl">
+        <h2 className="mb-12 text-center text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
           이용 흐름
         </h2>
         <div className="space-y-6">
@@ -346,8 +346,8 @@ export default function AboutPage() {
                 )}
               </div>
               <div className="pb-6">
-                <h3 className="text-base font-bold text-gray-900">{s.title}</h3>
-                <p className="mt-1 text-sm text-gray-500">{s.desc}</p>
+                <h3 className="text-lg font-bold text-gray-900">{s.title}</h3>
+                <p className="mt-1 text-base font-550 text-gray-500">{s.desc}</p>
               </div>
             </div>
           ))}
@@ -357,7 +357,7 @@ export default function AboutPage() {
       {/* 약속 */}
       <section className="bg-gray-900">
         <div className="mx-auto max-w-3xl px-5 py-16 text-center sm:py-24">
-          <h2 className="mb-10 text-2xl font-bold text-white sm:text-3xl">
+          <h2 className="mb-10 text-2xl font-bold text-white sm:text-3xl lg:text-4xl">
             이 플랫폼이 하지 않는 것
           </h2>
           <ul className="mx-auto max-w-md space-y-4 text-left">
@@ -374,7 +374,7 @@ export default function AboutPage() {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span className="text-sm leading-relaxed text-gray-300">{p}</span>
+                <span className="text-base font-550 leading-relaxed text-gray-300">{p}</span>
               </li>
             ))}
           </ul>
@@ -383,16 +383,16 @@ export default function AboutPage() {
 
       {/* CTA */}
       <section className="mx-auto max-w-3xl px-5 py-16 text-center sm:py-24">
-        <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
+        <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
           부담 없이 시작해보세요
         </h2>
-        <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-gray-500">
+        <p className="mx-auto mt-4 max-w-md text-base font-550 leading-relaxed text-gray-500">
           1분이면 견적 요청이 완료됩니다.
           <br />
           비용도, 계약 의무도, 업체의 재촉도 없습니다.
         </p>
         <Link
-          href="/#apply"
+          href="/form"
           className="mt-8 inline-flex items-center gap-2 rounded-full bg-orange-500 px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-orange-200/50 transition-all hover:bg-orange-600 hover:shadow-xl active:bg-orange-700"
         >
           무료 견적 비교 시작하기

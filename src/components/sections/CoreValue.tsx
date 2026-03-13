@@ -56,10 +56,10 @@ export default function CoreValue() {
 
             {/* CTA 버튼 */}
             <Link
-              href="/form"
+              href="/about"
               className="w-full rounded-full bg-orange-500 px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-orange-600 active:bg-orange-700 sm:w-auto sm:text-base inline-block text-center"
             >
-              나에게 맞는 업체 고르기
+              우리의 특별한 플랫폼을 소개합니다
             </Link>
           </motion.div>
 
