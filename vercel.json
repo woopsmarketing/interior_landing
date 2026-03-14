@@ -7,5 +7,10 @@
         { "key": "X-Frame-Options", "value": "DENY" }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "src/app/api/generate-interior/route.ts": {
+      "maxDuration": 120
+    }
+  }
 }
