@@ -37,13 +37,20 @@ const ATMOSPHERE_MAP: Record<string, string> = {
 };
 
 const SPACE_MAP: Record<string, string> = {
-  "거실": "living room",
-  "주방": "kitchen",
-  "침실": "bedroom",
-  "욕실": "bathroom",
-  "사무실": "home office",
-  "원룸": "studio apartment",
-  "전체": "entire apartment",
+  "아파트": "apartment",
+  "오피스텔": "officetel studio",
+  "전원주택/단독주택": "detached house",
+  "원룸/빌라": "studio villa",
+  "투룸/빌라": "two-room villa",
+  "타운하우스": "townhouse",
+  "카페": "cafe",
+  "음식점": "restaurant",
+  "술집/바": "bar",
+  "사무실": "office",
+  "병원/의원": "clinic",
+  "미용실/네일샵": "beauty salon",
+  "헬스장/스튜디오": "fitness studio",
+  "상가/매장": "retail store",
 };
 
 function mapList(items: string[], map: Record<string, string>): string {
