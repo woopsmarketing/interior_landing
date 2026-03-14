@@ -277,6 +277,7 @@ export async function POST(request: NextRequest) {
       prompt,
       n: 1,
       size: "1024x1024",
+      response_format: "b64_json",
     });
 
     const imageBase64 = result.data?.[0]?.b64_json;

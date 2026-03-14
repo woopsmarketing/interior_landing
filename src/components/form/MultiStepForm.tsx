@@ -140,6 +140,40 @@ export default function MultiStepForm() {
     captureUtmParams();
   }, []);
 
+  // 브라우저 뒤로가기 버튼으로 이전 단계 이동
+  useEffect(() => {
+    // 초기 히스토리 상태 설정
+    window.history.replaceState({ step: 1 }, "");
+  }, []);
+
+  useEffect(() => {
+    if (currentStep > 1) {
+      window.history.pushState({ step: currentStep }, "");
+    }
+  }, [currentStep]);
+
+  useEffect(() => {
+    const handlePopState = (e: PopStateEvent) => {
+      if (isSubmitted || isLoading) {
+        // 제출/로딩 중에는 뒤로가기 무시
+        window.history.pushState(null, "");
+        return;
+      }
+      const prevStep = e.state?.step;
+      if (typeof prevStep === "number" && prevStep >= 1 && prevStep < currentStep) {
+        setError(null);
+        setCurrentStep(prevStep);
+      } else if (!prevStep && currentStep > 1) {
+        // state가 없으면 1단계로
+        setError(null);
+        setCurrentStep(1);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [currentStep, isSubmitted, isLoading]);
+
   const handleChange = (field: keyof FormData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setError(null);
