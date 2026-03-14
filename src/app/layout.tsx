@@ -35,9 +35,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#f97316" />
+      </head>
       <body className={`${notoSansKR.variable} antialiased`}>
         <TrackingScripts />
         {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(function() {});
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );

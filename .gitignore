@@ -36,3 +36,6 @@ skills-lock.json
 
 # Marketing assets (generated/source files)
 marketing/assets/
+
+# Submission data (admin)
+data/

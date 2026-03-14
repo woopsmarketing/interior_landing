@@ -126,6 +126,8 @@ export default function MultiStepForm() {
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [debugInfo, setDebugInfo] = useState<Record<string, unknown> | null>(null);
   const [isDebugOpen, setIsDebugOpen] = useState(false);
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
+  const [pushStatus, setPushStatus] = useState<"idle" | "subscribed" | "denied" | "unsupported">("idle");
   const [isAnimating, setIsAnimating] = useState(false);
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
   const [loadingStep, setLoadingStep] = useState<"step1" | "step2" | "step3">("step1");
@@ -195,8 +197,52 @@ export default function MultiStepForm() {
 
     trackFormSubmit();
 
+    // 제출 데이터를 관리자 페이지용으로 저장하는 함수
+    const saveToAdmin = async (generatedImageBase64?: string | null) => {
+      try {
+        const body = new FormData();
+        // 모든 폼 필드 전송
+        body.append("spaceType", formData.spaceType);
+        body.append("region", formData.region);
+        body.append("area", formData.area);
+        body.append("areaUnknown", String(formData.areaUnknown));
+        body.append("currentCondition", formData.currentCondition);
+        body.append("buildingAge", formData.buildingAge);
+        body.append("constructionScope", formData.constructionScope);
+        body.append("desiredTiming", formData.desiredTiming);
+        body.append("budget", formData.budget);
+        body.append("constructionPurpose", formData.constructionPurpose);
+        body.append("scheduleFlexibility", formData.scheduleFlexibility);
+        body.append("occupancyDuringWork", formData.occupancyDuringWork);
+        body.append("priorities", JSON.stringify(formData.priorities));
+        body.append("preferredStyles", JSON.stringify(formData.preferredStyles));
+        body.append("preferredAtmosphere", formData.preferredAtmosphere);
+        body.append("currentProblems", JSON.stringify(formData.currentProblems));
+        body.append("additionalRequest", formData.additionalRequest);
+        body.append("name", formData.name);
+        body.append("phone", formData.phone);
+        body.append("email", formData.email);
+        body.append("contactMethod", JSON.stringify(formData.contactMethod));
+        body.append("availableTime", JSON.stringify(formData.availableTime));
+        body.append("agreePrivacy", String(formData.agreePrivacy));
+        body.append("agreeConsult", String(formData.agreeConsult));
+        body.append("agreeMarketing", String(formData.agreeMarketing));
+        // 이미지 파일
+        if (formData.spacePhoto) body.append("spacePhoto", formData.spacePhoto);
+        if (formData.referenceImage) body.append("referenceImage", formData.referenceImage);
+        if (generatedImageBase64) body.append("generatedImage", generatedImageBase64);
+
+        const res = await fetch("/api/submissions", { method: "POST", body });
+        const result = await res.json();
+        if (result.id) setSubmissionId(result.id);
+      } catch {
+        console.error("[saveToAdmin] 저장 실패");
+      }
+    };
+
     // 공간 사진 없으면 AI 생성 없이 바로 완료
     if (!formData.spacePhoto) {
+      saveToAdmin();
       setIsSubmitted(true);
       return;
     }
@@ -233,11 +279,14 @@ export default function MultiStepForm() {
         setGeneratedImage(data.imageBase64);
         trackAIImageGenerated();
         if (data.debug) setDebugInfo(data.debug);
+        saveToAdmin(data.imageBase64);
       } else {
         setGenerationError(data.error ?? "이미지 생성에 실패했습니다.");
+        saveToAdmin();
       }
     } catch {
       setGenerationError("네트워크 오류가 발생했습니다.");
+      saveToAdmin();
     } finally {
       if (timerRef.current) clearInterval(timerRef.current);
       setIsLoading(false);
@@ -457,6 +506,70 @@ export default function MultiStepForm() {
                   </div>
                 )}
               </div>
+            )}
+
+            {/* 푸시 알림 CTA */}
+            {submissionId && pushStatus === "idle" && (
+              <div className="mt-6 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 px-5 py-5 text-white text-left">
+                <p className="text-sm font-bold mb-1">견적 도착 알림 받기</p>
+                <p className="text-xs text-orange-100 mb-3">
+                  업체에서 견적을 보내면 즉시 알림을 보내드립니다. 브라우저를 닫아도 알림이 도착합니다.
+                </p>
+                <button
+                  onClick={async () => {
+                    if (!("Notification" in window) || !("serviceWorker" in navigator)) {
+                      setPushStatus("unsupported");
+                      return;
+                    }
+                    try {
+                      const permission = await Notification.requestPermission();
+                      if (permission !== "granted") { setPushStatus("denied"); return; }
+                      const reg = await navigator.serviceWorker.ready;
+                      const sub = await reg.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+                      });
+                      await fetch("/api/push/subscribe", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          submissionId,
+                          subscription: sub.toJSON(),
+                          customerName: formData.name,
+                        }),
+                      });
+                      setPushStatus("subscribed");
+                    } catch { setPushStatus("unsupported"); }
+                  }}
+                  className="w-full rounded-lg bg-white text-orange-600 py-2.5 text-sm font-bold hover:bg-orange-50 transition-colors"
+                >
+                  알림 허용하기
+                </button>
+              </div>
+            )}
+            {pushStatus === "subscribed" && (
+              <div className="mt-5 rounded-xl bg-green-50 border border-green-100 px-4 py-3 text-center">
+                <p className="text-sm font-medium text-green-700">알림이 설정되었습니다!</p>
+              </div>
+            )}
+            {pushStatus === "denied" && (
+              <div className="mt-5 rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 text-center">
+                <p className="text-xs text-gray-500">알림이 차단되었습니다. 브라우저 설정에서 허용해주세요.</p>
+              </div>
+            )}
+
+            {/* 내 견적 페이지 링크 */}
+            {submissionId && (
+              <a
+                href={`/my/${submissionId}`}
+                className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-gray-200 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                </svg>
+                내 견적 상태 확인하기
+              </a>
             )}
           </div>
         </div>
