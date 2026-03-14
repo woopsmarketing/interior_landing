@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 
-// Vercel 함수 타임아웃 설정 (최대 300초)
+// Vercel 함수 타임아웃 설정
 export const maxDuration = 120;
 
 function getClient() {
@@ -127,7 +127,7 @@ Output as 4-5 sentences. Be specific (e.g. "deep charcoal walls", "oak herringbo
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 최종 프롬프트 조합
+// 프롬프트 조합
 // ─────────────────────────────────────────────────────────────────────────────
 function buildPrompt(data: {
   spaceType: string;
@@ -146,20 +146,59 @@ function buildPrompt(data: {
     ? `Special requirements: ${data.additionalRequest}.`
     : "";
   const refStyle = data.referenceStyleBrief?.trim()
-    ? `\nSTYLE REFERENCE (color/material/mood only — do not copy layout):\n${data.referenceStyleBrief}`
+    ? `\nSTYLE REFERENCE (color/material/mood only):\n${data.referenceStyleBrief}`
     : "";
 
-  return `Photorealistic interior renovation proposal photo of a ${area}${space}. Shot with DSLR camera, architectural photography style.
+  return `Renovate this ${area}${space} into a photorealistic interior design proposal. Keep the exact same room structure, dimensions, windows, doors and camera angle.
 
-SPACE STRUCTURE (preserve exactly — same room dimensions, windows, doors, ceiling height):
+SPACE STRUCTURE (preserve exactly):
 ${data.structureAnalysis}
 
 DESIGN:
 - Style: ${styles}
 - Atmosphere: ${atmosphere}
-- ${additional}${refStyle}
+${additional}${refStyle}
 
-Requirements: Photorealistic, not a 3D render. Real materials with natural texture. Consistent lighting. Same camera angle as described. Professional interior photography quality.`.trim();
+Output: Photorealistic DSLR interior photography. Real materials with natural texture. Professional architectural photography quality. Do NOT change room layout or add windows/doors that don't exist.`.trim();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Step 3: gpt-image-1 images.edit — SDK 우회하여 fetch로 직접 호출
+// (OpenAI SDK 6.x가 client-side에서 gpt-image-1을 잘못 차단하므로)
+// ─────────────────────────────────────────────────────────────────────────────
+async function generateWithImageEdit(
+  imageBuffer: Buffer,
+  imageMime: string,
+  prompt: string
+): Promise<string> {
+  const formData = new FormData();
+
+  // 파일 Blob 생성 (실제 MIME 타입 그대로 사용)
+  const imageBlob = new Blob([new Uint8Array(imageBuffer)], { type: imageMime });
+  const ext = imageMime.includes("png") ? "png" : imageMime.includes("webp") ? "webp" : "jpg";
+  formData.append("image", imageBlob, `space.${ext}`);
+  formData.append("model", "gpt-image-1");
+  formData.append("prompt", prompt);
+  formData.append("n", "1");
+  formData.append("size", "1024x1024");
+
+  const res = await fetch("https://api.openai.com/v1/images/edits", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+    },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`OpenAI images.edit 실패 (${res.status}): ${errText.slice(0, 300)}`);
+  }
+
+  const json = await res.json() as { data?: Array<{ b64_json?: string }> };
+  const b64 = json.data?.[0]?.b64_json;
+  if (!b64) throw new Error("b64_json 응답 없음");
+  return b64;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -190,7 +229,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 이미지 → Buffer + base64 (실제 MIME 타입 사용)
     const spaceBuffer = Buffer.from(await spacePhotoFile!.arrayBuffer());
     const spacePhotoBase64 = spaceBuffer.toString("base64");
     const spaceMime = spacePhotoFile!.type || "image/jpeg";
@@ -206,7 +244,7 @@ export async function POST(request: NextRequest) {
     // Step 1: 공간 구조 분석
     console.log("[generate-interior] Step 1: 공간 구조 분석...");
     const structureAnalysis = await analyzeSpaceStructure(spacePhotoBase64, spaceMime);
-    console.log("[generate-interior] Step 1 완료");
+    console.log("[generate-interior] Step 1 완료:", structureAnalysis.slice(0, 80));
 
     // Step 2: 참고 이미지 스타일 분석 (선택)
     let referenceStyleBrief: string | null = null;
@@ -216,34 +254,22 @@ export async function POST(request: NextRequest) {
       console.log("[generate-interior] Step 2 완료");
     }
 
-    // Step 3: 프롬프트 조합 + 이미지 생성 (gpt-image-1 via images.generate)
+    // Step 3: gpt-image-1 images.edit (실제 사진 입력 → 고품질 리노베이션)
     const prompt = buildPrompt({
       spaceType, area, preferredStyles,
       preferredAtmosphere, additionalRequest,
       structureAnalysis, referenceStyleBrief,
     });
 
-    console.log("[generate-interior] Step 3: 이미지 생성 중...");
-    const result = await getClient().images.generate({
-      model: "gpt-image-1",
-      prompt,
-      n: 1,
-      size: "1024x1024",
-    });
+    console.log("[generate-interior] Step 3: gpt-image-1 images.edit 호출 중...");
+    const imageBase64 = await generateWithImageEdit(spaceBuffer, spaceMime, prompt);
+    console.log("[generate-interior] 완료! 이미지 생성 성공");
 
-    const imageBase64 = result.data?.[0]?.b64_json;
-
-    if (!imageBase64) {
-      console.error("[generate-interior] b64_json 없음:", result);
-      return NextResponse.json({ error: "이미지 생성에 실패했습니다." }, { status: 500 });
-    }
-
-    console.log("[generate-interior] 완료!");
     return NextResponse.json({
       imageBase64,
       debug: {
         model: "gpt-image-1",
-        mode: "generate",
+        mode: "edit (fetch direct)",
         apiCallCount: hasReferenceImage ? 3 : 2,
         hasSpacePhoto,
         hasReferenceImage,
@@ -255,7 +281,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (err: unknown) {
     const error = err as { status?: number; message?: string };
-    console.error("[generate-interior] Error:", error.status, error.message);
+    console.error("[generate-interior] Error:", error.message);
     return NextResponse.json(
       { error: `이미지 생성 실패: ${error.message ?? "알 수 없는 오류"}` },
       { status: 500 }
