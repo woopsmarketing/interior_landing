@@ -9,26 +9,6 @@ function getClient() {
 }
 
 // 한국어 → 영어 매핑
-const STYLE_MAP: Record<string, string> = {
-  "미니멀": "minimal",
-  "모던": "modern",
-  "북유럽": "Scandinavian",
-  "빈티지": "vintage",
-  "내추럴": "natural",
-  "클래식": "classic",
-  "인더스트리얼": "industrial",
-  "럭셔리": "luxury",
-};
-
-const ATMOSPHERE_MAP: Record<string, string> = {
-  "따뜻한": "warm and cozy",
-  "시원한": "cool and bright",
-  "아늑한": "snug and intimate",
-  "개방적인": "open and airy",
-  "차분한": "calm and serene",
-  "활기찬": "vibrant and energetic",
-};
-
 const SPACE_MAP: Record<string, string> = {
   "아파트": "apartment",
   "오피스텔": "officetel studio",
@@ -129,19 +109,55 @@ Output as 4-5 sentences. Be specific (e.g. "deep charcoal walls", "oak herringbo
 // ─────────────────────────────────────────────────────────────────────────────
 // 프롬프트 조합
 // ─────────────────────────────────────────────────────────────────────────────
+const AREA_MAP: Record<string, string> = {
+  "거실": "living room",
+  "주방/다이닝": "kitchen and dining area",
+  "안방": "master bedroom",
+  "작은방/자녀방": "secondary bedroom",
+  "욕실/화장실": "bathroom",
+  "현관": "entryway",
+  "드레스룸/옷장": "walk-in closet",
+  "서재/작업실": "home office",
+  "발코니/베란다": "balcony",
+  "다용도실": "utility room",
+  "홀/객석": "main hall and seating area",
+  "주방/조리공간": "kitchen and cooking area",
+  "카운터/바": "counter and bar",
+  "화장실": "restroom",
+  "테라스/야외석": "terrace and outdoor seating",
+  "외관/파사드": "exterior facade",
+  "창고/보관실": "storage room",
+  "대기공간": "waiting area",
+  "직원 공간": "staff area",
+  "개인 업무공간": "individual workstations",
+  "회의실": "meeting room",
+  "로비/리셉션": "lobby and reception",
+  "탕비실/휴게공간": "break room",
+  "임원실": "executive office",
+  "시술 공간": "treatment area",
+  "샴푸/세척 공간": "shampoo and wash area",
+  "운동 공간": "workout area",
+  "탈의실": "locker room",
+  "샤워실/화장실": "shower and restroom",
+  "영업/판매 공간": "retail sales floor",
+  "쇼케이스/디스플레이": "display and showcase area",
+  "카운터/계산대": "checkout counter",
+  "피팅룸/탈의실": "fitting room",
+};
+
 function buildPrompt(data: {
   spaceType: string;
   area: string;
-  preferredStyles: string[];
-  preferredAtmosphere: string;
+  renovationAreas: string[];
   additionalRequest: string;
   structureAnalysis: string;
   referenceStyleBrief?: string | null;
 }): string {
   const space = SPACE_MAP[data.spaceType] ?? data.spaceType ?? "interior space";
-  const styles = mapList(data.preferredStyles, STYLE_MAP) || "modern";
-  const atmosphere = ATMOSPHERE_MAP[data.preferredAtmosphere] ?? data.preferredAtmosphere ?? "balanced";
-  const area = data.area ? `${data.area}sqm ` : "";
+  const areaSize = data.area ? `${data.area}sqm ` : "";
+  const renovationList = data.renovationAreas.length > 0
+    ? mapList(data.renovationAreas, AREA_MAP)
+    : "entire space";
   const additional = data.additionalRequest?.trim()
     ? `Special requirements: ${data.additionalRequest}.`
     : "";
@@ -149,14 +165,14 @@ function buildPrompt(data: {
     ? `\nSTYLE REFERENCE (color/material/mood only):\n${data.referenceStyleBrief}`
     : "";
 
-  return `Renovate this ${area}${space} into a photorealistic interior design proposal. Keep the exact same room structure, dimensions, windows, doors and camera angle.
+  return `Renovate this ${areaSize}${space} into a photorealistic interior design proposal. Keep the exact same room structure, dimensions, windows, doors and camera angle.
 
 SPACE STRUCTURE (preserve exactly):
 ${data.structureAnalysis}
 
-DESIGN:
-- Style: ${styles}
-- Atmosphere: ${atmosphere}
+RENOVATION SCOPE:
+- Areas to renovate: ${renovationList}
+- Apply modern, clean, professional interior design
 ${additional}${refStyle}
 
 Output: Photorealistic DSLR interior photography. Real materials with natural texture. Professional architectural photography quality. Do NOT change room layout or add windows/doors that don't exist.`.trim();
@@ -208,13 +224,11 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
 
-    const preferredStyles: string[] = JSON.parse((formData.get("preferredStyles") as string) || "[]");
-    const preferredAtmosphere = (formData.get("preferredAtmosphere") as string) || "";
+    const renovationAreas: string[] = JSON.parse((formData.get("renovationAreas") as string) || "[]");
     const additionalRequest = (formData.get("additionalRequest") as string) || "";
     const spaceType = (formData.get("spaceType") as string) || "";
     const area = (formData.get("area") as string) || "";
     const budget = (formData.get("budget") as string) || "";
-    const priorities: string[] = JSON.parse((formData.get("priorities") as string) || "[]");
 
     const spacePhotoFile = formData.get("spacePhoto") as File | null;
     const referenceImageFile = formData.get("referenceImage") as File | null;
@@ -256,9 +270,8 @@ export async function POST(request: NextRequest) {
 
     // Step 3: gpt-image-1 images.edit (실제 사진 입력 → 고품질 리노베이션)
     const prompt = buildPrompt({
-      spaceType, area, preferredStyles,
-      preferredAtmosphere, additionalRequest,
-      structureAnalysis, referenceStyleBrief,
+      spaceType, area, renovationAreas,
+      additionalRequest, structureAnalysis, referenceStyleBrief,
     });
 
     console.log("[generate-interior] Step 3: gpt-image-1 images.edit 호출 중...");
@@ -276,7 +289,7 @@ export async function POST(request: NextRequest) {
         structureAnalysis,
         referenceStyleBrief: referenceStyleBrief ?? null,
         prompt,
-        inputs: { spaceType, area, budget, priorities, preferredStyles, preferredAtmosphere, additionalRequest },
+        inputs: { spaceType, area, budget, renovationAreas, additionalRequest },
       },
     });
   } catch (err: unknown) {

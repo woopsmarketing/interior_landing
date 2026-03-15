@@ -24,11 +24,8 @@ export interface FormData {
   constructionPurpose: string;
   scheduleFlexibility: string;
   occupancyDuringWork: string;
-  // Step 3 - 취향 및 우선순위
-  priorities: string[];
-  preferredStyles: string[];
-  preferredAtmosphere: string;
-  currentProblems: string[];
+  // Step 3 - 인테리어 할 공간
+  renovationAreas: string[];
   // Step 4 - 이미지 및 요청사항
   spacePhoto: File | null;
   referenceImage: File | null;
@@ -57,10 +54,7 @@ const INITIAL_FORM_DATA: FormData = {
   constructionPurpose: "",
   scheduleFlexibility: "",
   occupancyDuringWork: "",
-  priorities: [],
-  preferredStyles: [],
-  preferredAtmosphere: "",
-  currentProblems: [],
+  renovationAreas: [],
   spacePhoto: null,
   referenceImage: null,
   additionalRequest: "",
@@ -79,7 +73,7 @@ const TOTAL_STEPS = 5;
 const STEP_LABELS = [
   "공간 기본 정보",
   "공사 희망 정보",
-  "취향 및 우선순위",
+  "인테리어 공간 선택",
   "이미지 및 요청사항",
   "개인정보 및 동의",
 ];
@@ -96,7 +90,7 @@ function validateStep(step: number, formData: FormData): string | null {
     if (!formData.budget) return "예산 범위를 선택해주세요.";
   }
   if (step === 3) {
-    if (formData.priorities.length === 0) return "중요하게 생각하는 요소를 1개 이상 선택해주세요.";
+    if (formData.renovationAreas.length === 0) return "인테리어 할 공간을 1개 이상 선택해주세요.";
   }
   if (step === 5) {
     if (!formData.name.trim()) return "이름을 입력해주세요.";
@@ -248,10 +242,7 @@ export default function MultiStepForm() {
         body.append("constructionPurpose", formData.constructionPurpose);
         body.append("scheduleFlexibility", formData.scheduleFlexibility);
         body.append("occupancyDuringWork", formData.occupancyDuringWork);
-        body.append("priorities", JSON.stringify(formData.priorities));
-        body.append("preferredStyles", JSON.stringify(formData.preferredStyles));
-        body.append("preferredAtmosphere", formData.preferredAtmosphere);
-        body.append("currentProblems", JSON.stringify(formData.currentProblems));
+        body.append("renovationAreas", JSON.stringify(formData.renovationAreas));
         body.append("additionalRequest", formData.additionalRequest);
         body.append("name", formData.name);
         body.append("phone", formData.phone);
@@ -298,9 +289,7 @@ export default function MultiStepForm() {
       const body = new FormData();
       body.append("spacePhoto", formData.spacePhoto);
       if (formData.referenceImage) body.append("referenceImage", formData.referenceImage);
-      body.append("priorities", JSON.stringify(formData.priorities));
-      body.append("preferredStyles", JSON.stringify(formData.preferredStyles));
-      body.append("preferredAtmosphere", formData.preferredAtmosphere);
+      body.append("renovationAreas", JSON.stringify(formData.renovationAreas));
       body.append("additionalRequest", formData.additionalRequest);
       body.append("spaceType", formData.spaceType);
       body.append("area", formData.area);
@@ -704,7 +693,6 @@ export default function MultiStepForm() {
               <Step3
                 formData={formData}
                 onMultiChange={handleMultiChange}
-                onChange={handleChange as (field: keyof FormData, value: string) => void}
               />
             )}
             {currentStep === 4 && (

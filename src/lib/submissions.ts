@@ -22,10 +22,7 @@ export interface SubmissionData {
   scheduleFlexibility: string;
   occupancyDuringWork: string;
   // Step 3
-  priorities: string[];
-  preferredStyles: string[];
-  preferredAtmosphere: string;
-  currentProblems: string[];
+  renovationAreas: string[];
   // Step 4
   additionalRequest: string;
   hasSpacePhoto: boolean;
