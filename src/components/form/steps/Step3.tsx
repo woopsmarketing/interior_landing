@@ -5,6 +5,7 @@ import { FormData } from "../MultiStepForm";
 interface Step3Props {
   formData: FormData;
   onMultiChange: (field: keyof FormData, value: string, checked: boolean) => void;
+  onChange: (field: keyof FormData, value: string) => void;
 }
 
 // 주거용 공간 요소
@@ -107,7 +108,7 @@ function isCommercial(spaceType: string): boolean {
   return [...FOOD_TYPES, ...OFFICE_TYPES, ...BEAUTY_TYPES, ...FITNESS_TYPES, ...RETAIL_TYPES].includes(spaceType);
 }
 
-export default function Step3({ formData, onMultiChange }: Step3Props) {
+export default function Step3({ formData, onMultiChange, onChange }: Step3Props) {
   const areas = getAreaList(formData.spaceType);
   const commercial = isCommercial(formData.spaceType);
   const selected = formData.renovationAreas;
@@ -166,6 +167,21 @@ export default function Step3({ formData, onMultiChange }: Step3Props) {
           </p>
         </div>
       )}
+
+      {/* 직접 입력 */}
+      <div>
+        <div className="flex items-baseline justify-between mb-1.5">
+          <label className="text-sm font-medium text-gray-700">공간 구성 요청사항</label>
+          <span className="text-xs text-gray-400">선택사항</span>
+        </div>
+        <textarea
+          value={formData.renovationNote}
+          onChange={(e) => onChange("renovationNote", e.target.value)}
+          placeholder={"예: 거실과 주방 사이 벽 제거해서 오픈형으로 바꾸고 싶어요\n예: 베란다 확장해서 거실로 합치고 싶어요\n예: 작은방 2개를 하나로 트고 싶어요"}
+          rows={3}
+          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 placeholder:text-xs focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 transition-colors resize-none"
+        />
+      </div>
     </div>
   );
 }

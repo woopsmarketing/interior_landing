@@ -26,6 +26,7 @@ export interface FormData {
   occupancyDuringWork: string;
   // Step 3 - 인테리어 할 공간
   renovationAreas: string[];
+  renovationNote: string;
   // Step 4 - 이미지 및 요청사항
   spacePhoto: File | null;
   referenceImage: File | null;
@@ -55,6 +56,7 @@ const INITIAL_FORM_DATA: FormData = {
   scheduleFlexibility: "",
   occupancyDuringWork: "",
   renovationAreas: [],
+  renovationNote: "",
   spacePhoto: null,
   referenceImage: null,
   additionalRequest: "",
@@ -243,6 +245,7 @@ export default function MultiStepForm() {
         body.append("scheduleFlexibility", formData.scheduleFlexibility);
         body.append("occupancyDuringWork", formData.occupancyDuringWork);
         body.append("renovationAreas", JSON.stringify(formData.renovationAreas));
+        body.append("renovationNote", formData.renovationNote);
         body.append("additionalRequest", formData.additionalRequest);
         body.append("name", formData.name);
         body.append("phone", formData.phone);
@@ -693,6 +696,7 @@ export default function MultiStepForm() {
               <Step3
                 formData={formData}
                 onMultiChange={handleMultiChange}
+                onChange={handleChange as (field: keyof FormData, value: string) => void}
               />
             )}
             {currentStep === 4 && (

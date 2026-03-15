@@ -149,6 +149,7 @@ function buildPrompt(data: {
   spaceType: string;
   area: string;
   renovationAreas: string[];
+  renovationNote: string;
   additionalRequest: string;
   structureAnalysis: string;
   referenceStyleBrief?: string | null;
@@ -158,24 +159,28 @@ function buildPrompt(data: {
   const renovationList = data.renovationAreas.length > 0
     ? mapList(data.renovationAreas, AREA_MAP)
     : "entire space";
+  const layoutNote = data.renovationNote?.trim()
+    ? `Layout changes requested: ${data.renovationNote}.`
+    : "";
   const additional = data.additionalRequest?.trim()
-    ? `Special requirements: ${data.additionalRequest}.`
+    ? `Additional requirements: ${data.additionalRequest}.`
     : "";
   const refStyle = data.referenceStyleBrief?.trim()
     ? `\nSTYLE REFERENCE (color/material/mood only):\n${data.referenceStyleBrief}`
     : "";
 
-  return `Renovate this ${areaSize}${space} into a photorealistic interior design proposal. Keep the exact same room structure, dimensions, windows, doors and camera angle.
+  return `Renovate this ${areaSize}${space} into a photorealistic interior design proposal. Keep the exact same room structure, dimensions, windows, doors and camera angle unless layout changes are explicitly requested below.
 
-SPACE STRUCTURE (preserve exactly):
+SPACE STRUCTURE (preserve exactly unless noted):
 ${data.structureAnalysis}
 
 RENOVATION SCOPE:
 - Areas to renovate: ${renovationList}
 - Apply modern, clean, professional interior design
+${layoutNote}
 ${additional}${refStyle}
 
-Output: Photorealistic DSLR interior photography. Real materials with natural texture. Professional architectural photography quality. Do NOT change room layout or add windows/doors that don't exist.`.trim();
+Output: Photorealistic DSLR interior photography. Real materials with natural texture. Professional architectural photography quality.`.trim();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -225,6 +230,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
 
     const renovationAreas: string[] = JSON.parse((formData.get("renovationAreas") as string) || "[]");
+    const renovationNote = (formData.get("renovationNote") as string) || "";
     const additionalRequest = (formData.get("additionalRequest") as string) || "";
     const spaceType = (formData.get("spaceType") as string) || "";
     const area = (formData.get("area") as string) || "";
@@ -270,7 +276,7 @@ export async function POST(request: NextRequest) {
 
     // Step 3: gpt-image-1 images.edit (실제 사진 입력 → 고품질 리노베이션)
     const prompt = buildPrompt({
-      spaceType, area, renovationAreas,
+      spaceType, area, renovationAreas, renovationNote,
       additionalRequest, structureAnalysis, referenceStyleBrief,
     });
 
@@ -289,7 +295,7 @@ export async function POST(request: NextRequest) {
         structureAnalysis,
         referenceStyleBrief: referenceStyleBrief ?? null,
         prompt,
-        inputs: { spaceType, area, budget, renovationAreas, additionalRequest },
+        inputs: { spaceType, area, budget, renovationAreas, renovationNote, additionalRequest },
       },
     });
   } catch (err: unknown) {

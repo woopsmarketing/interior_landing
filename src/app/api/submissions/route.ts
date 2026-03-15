@@ -31,6 +31,7 @@ export async function POST(request: NextRequest) {
       scheduleFlexibility: (formData.get("scheduleFlexibility") as string) || "",
       occupancyDuringWork: (formData.get("occupancyDuringWork") as string) || "",
       renovationAreas: JSON.parse((formData.get("renovationAreas") as string) || "[]"),
+      renovationNote: (formData.get("renovationNote") as string) || "",
       additionalRequest: (formData.get("additionalRequest") as string) || "",
       name: (formData.get("name") as string) || "",
       phone: (formData.get("phone") as string) || "",

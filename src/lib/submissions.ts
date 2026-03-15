@@ -23,6 +23,7 @@ export interface SubmissionData {
   occupancyDuringWork: string;
   // Step 3
   renovationAreas: string[];
+  renovationNote: string;
   // Step 4
   additionalRequest: string;
   hasSpacePhoto: boolean;
