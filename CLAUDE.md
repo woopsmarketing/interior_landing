@@ -237,3 +237,4 @@ const imageData = response.output
 - **병렬 가능한 작업은 반드시 병렬로** 실행한다
 - **결과를 취합하여 요약 보고**한다
 - 정보가 부족하면 먼저 사용자에게 질문한다
+- **구현 완료 후 반드시 `build-validator` 에이전트로 빌드 검증** → 성공 확인 후 완료 보고 (TASK/FEATURE/PROJECT 무관 필수)

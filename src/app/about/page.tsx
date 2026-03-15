@@ -91,11 +91,11 @@ export default function AboutPage() {
       {/* 헤더 */}
       <header className="border-b border-gray-100">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 sm:px-8 lg:px-12">
-          <a href="/" className="flex items-center gap-1.5">
+          <Link href="/" className="flex items-center gap-1.5">
             <span className="text-lg font-bold tracking-tight text-gray-900">
               인테리어<span className="text-orange-500">비교</span>
             </span>
-          </a>
+          </Link>
           <Link
             href="/#apply"
             className="rounded-full bg-orange-500 px-6 py-2.5 text-sm font-bold text-white shadow-sm shadow-orange-200/50 transition-all hover:bg-orange-600 active:bg-orange-700"
