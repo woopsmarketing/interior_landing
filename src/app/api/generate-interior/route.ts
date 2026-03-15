@@ -26,10 +26,6 @@ const SPACE_MAP: Record<string, string> = {
   "상가/매장": "retail store",
 };
 
-function mapList(items: string[], map: Record<string, string>): string {
-  return items.map((v) => map[v] ?? v).join(", ");
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Step 1: GPT-4o Vision — 공간 구조 분석
 // ─────────────────────────────────────────────────────────────────────────────
@@ -109,63 +105,15 @@ Output as 4-5 sentences. Be specific (e.g. "deep charcoal walls", "oak herringbo
 // ─────────────────────────────────────────────────────────────────────────────
 // 프롬프트 조합
 // ─────────────────────────────────────────────────────────────────────────────
-const AREA_MAP: Record<string, string> = {
-  "거실": "living room",
-  "주방/다이닝": "kitchen and dining area",
-  "안방": "master bedroom",
-  "작은방/자녀방": "secondary bedroom",
-  "욕실/화장실": "bathroom",
-  "현관": "entryway",
-  "드레스룸/옷장": "walk-in closet",
-  "서재/작업실": "home office",
-  "발코니/베란다": "balcony",
-  "다용도실": "utility room",
-  "홀/객석": "main hall and seating area",
-  "주방/조리공간": "kitchen and cooking area",
-  "카운터/바": "counter and bar",
-  "화장실": "restroom",
-  "테라스/야외석": "terrace and outdoor seating",
-  "외관/파사드": "exterior facade",
-  "창고/보관실": "storage room",
-  "대기공간": "waiting area",
-  "직원 공간": "staff area",
-  "개인 업무공간": "individual workstations",
-  "회의실": "meeting room",
-  "로비/리셉션": "lobby and reception",
-  "탕비실/휴게공간": "break room",
-  "임원실": "executive office",
-  "시술 공간": "treatment area",
-  "샴푸/세척 공간": "shampoo and wash area",
-  "운동 공간": "workout area",
-  "탈의실": "locker room",
-  "샤워실/화장실": "shower and restroom",
-  "영업/판매 공간": "retail sales floor",
-  "쇼케이스/디스플레이": "display and showcase area",
-  "카운터/계산대": "checkout counter",
-  "피팅룸/탈의실": "fitting room",
-  "베란다 확장": "balcony expansion into living space",
-  "오픈형 구조 변경": "open-plan layout conversion by removing walls",
-  "방 통합/확장": "room merging and expansion",
-  "공간 확장/통합": "space expansion and integration",
-};
-
 function buildPrompt(data: {
   spaceType: string;
   area: string;
-  renovationAreas: string[];
-  renovationNote: string;
   additionalRequest: string;
   structureAnalysis: string;
   referenceStyleBrief?: string | null;
 }): string {
   const space = SPACE_MAP[data.spaceType] ?? data.spaceType ?? "interior space";
   const areaSize = data.area ? `${data.area}sqm ` : "";
-  const renovationList = data.renovationAreas.length > 0
-    ? mapList(data.renovationAreas, AREA_MAP)
-    : "entire space";
-  const layoutNote = data.renovationNote?.trim()
-    ? `Layout changes requested: ${data.renovationNote}.`
-    : "";
   const additional = data.additionalRequest?.trim()
     ? `Additional requirements: ${data.additionalRequest}.`
     : "";
@@ -173,15 +121,13 @@ function buildPrompt(data: {
     ? `\nSTYLE REFERENCE (color/material/mood only):\n${data.referenceStyleBrief}`
     : "";
 
-  return `Renovate this ${areaSize}${space} into a photorealistic interior design proposal. Keep the exact same room structure, dimensions, windows, doors and camera angle unless layout changes are explicitly requested below.
+  return `Renovate this ${areaSize}${space} into a photorealistic interior design proposal. Keep the exact same room structure, dimensions, windows, doors and camera angle.
 
-SPACE STRUCTURE (preserve exactly unless noted):
+SPACE STRUCTURE (preserve exactly):
 ${data.structureAnalysis}
 
 RENOVATION SCOPE:
-- Areas to renovate: ${renovationList}
-- Apply modern, clean, professional interior design
-${layoutNote}
+- Apply modern, clean, professional interior design to the entire space
 ${additional}${refStyle}
 
 Output: Photorealistic DSLR interior photography. Real materials with natural texture. Professional architectural photography quality.`.trim();
@@ -233,8 +179,6 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
 
-    const renovationAreas: string[] = JSON.parse((formData.get("renovationAreas") as string) || "[]");
-    const renovationNote = (formData.get("renovationNote") as string) || "";
     const additionalRequest = (formData.get("additionalRequest") as string) || "";
     const spaceType = (formData.get("spaceType") as string) || "";
     const area = (formData.get("area") as string) || "";
@@ -280,7 +224,7 @@ export async function POST(request: NextRequest) {
 
     // Step 3: gpt-image-1 images.edit (실제 사진 입력 → 고품질 리노베이션)
     const prompt = buildPrompt({
-      spaceType, area, renovationAreas, renovationNote,
+      spaceType, area,
       additionalRequest, structureAnalysis, referenceStyleBrief,
     });
 
