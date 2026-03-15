@@ -20,6 +20,9 @@ const RESIDENTIAL_AREAS = [
   "서재/작업실",
   "발코니/베란다",
   "다용도실",
+  "베란다 확장",
+  "오픈형 구조 변경",
+  "방 통합/확장",
 ];
 
 // 상업용 공간 요소
@@ -33,6 +36,7 @@ const COMMERCIAL_AREAS_FOOD = [
   "창고/보관실",
   "대기공간",
   "직원 공간",
+  "공간 확장/통합",
 ];
 
 const COMMERCIAL_AREAS_OFFICE = [
@@ -44,6 +48,7 @@ const COMMERCIAL_AREAS_OFFICE = [
   "임원실",
   "창고/보관실",
   "직원 공간",
+  "공간 확장/통합",
 ];
 
 const COMMERCIAL_AREAS_BEAUTY = [
@@ -54,6 +59,7 @@ const COMMERCIAL_AREAS_BEAUTY = [
   "외관/파사드",
   "직원 공간",
   "창고/보관실",
+  "공간 확장/통합",
 ];
 
 const COMMERCIAL_AREAS_FITNESS = [
@@ -64,6 +70,7 @@ const COMMERCIAL_AREAS_FITNESS = [
   "외관/파사드",
   "직원 공간",
   "창고/보관실",
+  "공간 확장/통합",
 ];
 
 const COMMERCIAL_AREAS_RETAIL = [
@@ -75,6 +82,7 @@ const COMMERCIAL_AREAS_RETAIL = [
   "외관/파사드",
   "창고/보관실",
   "대기공간",
+  "공간 확장/통합",
 ];
 
 // 주거용 세부 유형 목록

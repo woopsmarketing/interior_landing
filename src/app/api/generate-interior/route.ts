@@ -143,6 +143,10 @@ const AREA_MAP: Record<string, string> = {
   "쇼케이스/디스플레이": "display and showcase area",
   "카운터/계산대": "checkout counter",
   "피팅룸/탈의실": "fitting room",
+  "베란다 확장": "balcony expansion into living space",
+  "오픈형 구조 변경": "open-plan layout conversion by removing walls",
+  "방 통합/확장": "room merging and expansion",
+  "공간 확장/통합": "space expansion and integration",
 };
 
 function buildPrompt(data: {
