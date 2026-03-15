@@ -90,7 +90,7 @@ export default function Hero() {
               href="/form"
               className="w-full rounded-full bg-orange-500 px-10 py-4.5 text-center text-lg font-bold text-white shadow-lg shadow-orange-200/60 transition-all hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-200/80 active:bg-orange-700 sm:w-auto"
             >
-              한 번의 요청으로, 100+ 업체 스마트 견적
+              양식 1회 작성 → 100+ 업체 견적 받기
             </Link>
             <Link
               href="/form"
