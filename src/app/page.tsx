@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import Header from "@/components/sections/Header";
 import Hero from "@/components/sections/Hero";
 import QuickBenefits from "@/components/sections/QuickBenefits";
+import BottomCTA from "@/components/sections/BottomCTA";
 
 const BeforeAfter = dynamic(() => import("@/components/sections/BeforeAfter"));
 const Problem = dynamic(() => import("@/components/sections/Problem"));
@@ -20,7 +21,7 @@ const FinalCTA = dynamic(() => import("@/components/sections/FinalCTA"));
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white pb-24">
       <Header />
       <div id="hero"><Hero /></div>
       <div id="benefits"><QuickBenefits /></div>
@@ -36,6 +37,7 @@ export default function Home() {
       <div id="trust"><Trust /></div>
       <div id="faq"><FAQ /></div>
       <div id="apply"><FinalCTA /></div>
+      <BottomCTA />
     </main>
   );
 }

@@ -243,7 +243,7 @@ export async function POST(request: NextRequest) {
         structureAnalysis,
         referenceStyleBrief: referenceStyleBrief ?? null,
         prompt,
-        inputs: { spaceType, area, budget, renovationAreas, renovationNote, additionalRequest },
+        inputs: { spaceType, area, budget, additionalRequest },
       },
     });
   } catch (err: unknown) {

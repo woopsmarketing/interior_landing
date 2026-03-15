@@ -13,7 +13,7 @@ export default function Header() {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="sticky top-0 z-50 w-full bg-white"
+      className="w-full bg-white"
     >
       {/* 프로모션 배너 — 문구만, 버튼 없음 */}
       <AnimatePresence>
