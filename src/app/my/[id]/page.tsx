@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 
 interface Submission {
@@ -21,6 +22,21 @@ interface Submission {
   hasReferenceImage: boolean;
   hasGeneratedImage: boolean;
   name: string;
+}
+
+interface CompanyResponseItem {
+  id: string;
+  message: string | null;
+  estimated_price: string | null;
+  created_at: string;
+  portfolio_count: number;
+  companies: {
+    id: string;
+    company_name: string;
+    logo_url: string | null;
+    specialties: string[];
+    preferred_styles: string[];
+  } | null;
 }
 
 const STATUS_STEPS = [
@@ -47,6 +63,8 @@ export default function MySubmissionPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pushStatus, setPushStatus] = useState<"idle" | "subscribed" | "denied" | "unsupported">("idle");
+  const [responses, setResponses] = useState<CompanyResponseItem[]>([]);
+  const [responsesLoading, setResponsesLoading] = useState(false);
 
   const fetchSubmission = useCallback(async () => {
     try {
@@ -61,9 +79,25 @@ export default function MySubmissionPage() {
     }
   }, [id]);
 
+  const fetchResponses = useCallback(async () => {
+    setResponsesLoading(true);
+    try {
+      const res = await fetch(`/api/submissions/${id}/responses`);
+      if (res.ok) {
+        const data = await res.json();
+        setResponses(data.responses || []);
+      }
+    } catch {
+      /* ignore */
+    } finally {
+      setResponsesLoading(false);
+    }
+  }, [id]);
+
   useEffect(() => {
     fetchSubmission();
-  }, [fetchSubmission]);
+    fetchResponses();
+  }, [fetchSubmission, fetchResponses]);
 
   // 푸시 알림 구독 상태 확인
   useEffect(() => {
@@ -174,7 +208,6 @@ export default function MySubmissionPage() {
 
               return (
                 <li key={stepNum} className="flex items-start gap-4">
-                  {/* 연결선 + 원 */}
                   <div className="flex flex-col items-center">
                     <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
                       isDone ? "bg-orange-500 text-white" :
@@ -290,6 +323,71 @@ export default function MySubmissionPage() {
             </div>
           </div>
         )}
+
+        {/* 응답 업체 섹션 */}
+        <div className="rounded-2xl bg-white border border-gray-100 shadow-sm p-6">
+          <h2 className="text-sm font-bold text-gray-700 mb-4">응답 업체</h2>
+          {responsesLoading ? (
+            <div className="flex justify-center py-8">
+              <div className="h-6 w-6 animate-spin rounded-full border-gray-200 border-t-orange-500" style={{ borderWidth: "2px" }} />
+            </div>
+          ) : responses.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-sm text-gray-400">아직 업체 응답이 없습니다.</p>
+              <p className="text-xs text-gray-300 mt-1">업체에서 견적을 보내면 여기에 표시됩니다.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {responses.map((r) => {
+                const company = r.companies;
+                if (!company) return null;
+                return (
+                  <Link
+                    key={r.id}
+                    href={`/my/${id}/companies/${company.id}`}
+                    className="block rounded-xl border border-gray-200 p-4 hover:border-orange-200 hover:shadow-sm transition-all"
+                  >
+                    <div className="flex items-start gap-3">
+                      {company.logo_url ? (
+                        <div className="relative w-10 h-10 shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                          <Image src={company.logo_url} alt="" fill className="object-cover" />
+                        </div>
+                      ) : (
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-sm font-bold text-orange-500">
+                          {company.company_name.charAt(0)}
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-semibold text-gray-900">{company.company_name}</span>
+                          {r.estimated_price && (
+                            <span className="text-sm font-bold text-orange-600">{r.estimated_price}</span>
+                          )}
+                        </div>
+                        {company.specialties?.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {company.specialties.slice(0, 3).map((s) => (
+                              <span key={s} className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">{s}</span>
+                            ))}
+                          </div>
+                        )}
+                        {r.message && (
+                          <p className="text-xs text-gray-500 mt-1.5 line-clamp-1">{r.message}</p>
+                        )}
+                        <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-400">
+                          {r.portfolio_count > 0 && <span>포트폴리오 {r.portfolio_count}건</span>}
+                        </div>
+                      </div>
+                      <svg className="h-4 w-4 text-gray-300 shrink-0 mt-2" viewBox="0 0 16 16" fill="none">
+                        <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
         {/* 푸시 알림 CTA */}
         {pushStatus === "idle" && (
