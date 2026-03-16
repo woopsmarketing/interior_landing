@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedCompany } from "@/lib/company-auth";
 import { supabaseAdmin } from "@/lib/supabase";
+import { sendPushToCustomer } from "@/lib/push";
 
 // POST — 견적 응답 제출
 export async function POST(request: NextRequest) {
@@ -39,6 +40,17 @@ export async function POST(request: NextRequest) {
         );
       }
       return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    // 고객에게 자동 푸시 알림 발송 (실패해도 응답 저장은 유지)
+    try {
+      await sendPushToCustomer(submission_id, {
+        title: "업체 견적 응답 도착!",
+        body: `${company.company_name}에서 견적 응답을 보냈습니다.`,
+        url: `/my/${submission_id}`,
+      });
+    } catch (pushErr) {
+      console.error("[companies/responses] 푸시 발송 실패:", pushErr);
     }
 
     return NextResponse.json(data, { status: 201 });
