@@ -270,7 +270,7 @@ export default function MultiStepForm() {
 
     // 공간 사진 없으면 AI 생성 없이 바로 완료
     if (!formData.spacePhoto) {
-      saveToAdmin();
+      await saveToAdmin();
       setIsSubmitted(true);
       return;
     }
@@ -305,14 +305,14 @@ export default function MultiStepForm() {
         setGeneratedImage(data.imageBase64);
         trackAIImageGenerated();
         if (data.debug) setDebugInfo(data.debug);
-        saveToAdmin(data.imageBase64);
+        await saveToAdmin(data.imageBase64);
       } else {
         setGenerationError(data.error ?? "이미지 생성에 실패했습니다.");
-        saveToAdmin();
+        await saveToAdmin();
       }
     } catch {
       setGenerationError("네트워크 오류가 발생했습니다.");
-      saveToAdmin();
+      await saveToAdmin();
     } finally {
       if (timerRef.current) clearInterval(timerRef.current);
       setIsLoading(false);
