@@ -554,11 +554,29 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
 // Main AdminPage
 // ──────────────────────────────────────────────
 export default function AdminPage() {
+  const [authenticated, setAuthenticated] = useState(false);
+  const [authChecking, setAuthChecking] = useState(true);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"submissions" | "companies">("submissions");
+
+  // 인증 상태 확인
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/admin/login");
+        if (res.ok) {
+          setAuthenticated(true);
+        }
+      } catch {
+        /* not authenticated */
+      } finally {
+        setAuthChecking(false);
+      }
+    })();
+  }, []);
 
   const fetchSubmissions = useCallback(async () => {
     try {
@@ -578,8 +596,8 @@ export default function AdminPage() {
   }, []);
 
   useEffect(() => {
-    fetchSubmissions();
-  }, [fetchSubmissions]);
+    if (authenticated) fetchSubmissions();
+  }, [authenticated, fetchSubmissions]);
 
   const selected = submissions.find((s) => s.id === selectedId) ?? null;
 
@@ -604,6 +622,20 @@ export default function AdminPage() {
     { label: "업체 회원가입", href: "/company/register", desc: "업체 포털" },
     { label: "업체 대시보드", href: "/company/dashboard", desc: "업체 포털" },
   ];
+
+  // 인증 확인 중
+  if (authChecking) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-gray-200 border-t-orange-500" style={{ borderWidth: "3px" }} />
+      </div>
+    );
+  }
+
+  // 미인증 → 로그인 폼
+  if (!authenticated) {
+    return <LoginForm onLogin={() => setAuthenticated(true)} />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
