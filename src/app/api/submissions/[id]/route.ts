@@ -1,5 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSubmission, getSubmissionImageUrl } from "@/lib/submissions";
+import { sendPushToCustomer } from "@/lib/push";
+
+// 상태별 푸시 알림 메시지 매핑
+const STATUS_PUSH_MESSAGES: Record<string, { title: string; body: string }> = {
+  matching: {
+    title: "업체 매칭 시작",
+    body: "조건에 맞는 업체를 선별하고 있습니다. 곧 견적을 받아보실 수 있어요!",
+  },
+  quoted: {
+    title: "견적이 도착했습니다!",
+    body: "업체에서 견적을 보내왔습니다. 지금 확인해보세요!",
+  },
+};
 
 // GET /api/submissions/[id]?type=space|reference|generated
 // type 없으면 JSON 데이터, type 있으면 Storage URL로 리다이렉트
@@ -42,6 +55,20 @@ export async function PATCH(
 
     const { error } = await supabase.from("submissions").update(updates).eq("id", id);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+    // 상태 변경 성공 후 자동 푸시 알림 발송
+    if (status && STATUS_PUSH_MESSAGES[status]) {
+      const pushMessage = STATUS_PUSH_MESSAGES[status];
+      try {
+        await sendPushToCustomer(id, {
+          title: pushMessage.title,
+          body: pushMessage.body,
+          url: `/my/${id}`,
+        });
+      } catch (pushErr) {
+        console.error(`[submissions/patch] 자동 푸시 발송 실패 (${id}):`, pushErr);
+      }
+    }
 
     return NextResponse.json({ success: true });
   } catch (err) {
