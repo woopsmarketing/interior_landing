@@ -1,3 +1,4 @@
+import sharp from "sharp";
 import { supabaseAdmin as supabase } from "./supabase";
 
 export interface SubmissionData {
@@ -88,24 +89,38 @@ function generateId(): string {
   return `${date}_${rand}`;
 }
 
+// 이미지를 WebP로 압축 (업로드 전 용량 절감)
+async function compressToWebP(buffer: Buffer, quality = 82): Promise<Buffer> {
+  try {
+    return await sharp(buffer).webp({ quality }).toBuffer();
+  } catch {
+    // sharp 실패 시 원본 그대로 사용
+    return buffer;
+  }
+}
+
 async function uploadImage(
   id: string,
   buffer: Buffer,
   filename: string,
-  contentType: string
 ): Promise<string | null> {
+  // .jpg / .png → .webp 변환
+  const webpFilename = filename.replace(/\.(jpe?g|png)$/i, ".webp");
+  const quality = filename.includes("generated") ? 88 : 82;
+  const compressed = await compressToWebP(buffer, quality);
+
   const { error } = await supabase.storage
     .from("interior-images")
-    .upload(`${id}/${filename}`, buffer, { contentType, upsert: true });
+    .upload(`${id}/${webpFilename}`, compressed, { contentType: "image/webp", upsert: true });
 
   if (error) {
-    console.error(`[storage] upload error (${filename}):`, error.message);
+    console.error(`[storage] upload error (${webpFilename}):`, error.message);
     return null;
   }
 
   const { data } = supabase.storage
     .from("interior-images")
-    .getPublicUrl(`${id}/${filename}`);
+    .getPublicUrl(`${id}/${webpFilename}`);
 
   return data.publicUrl;
 }
@@ -124,9 +139,9 @@ export async function saveSubmission(
   const id = generateId();
 
   const [spacePhotoUrl, referenceImageUrl, generatedImageUrl] = await Promise.all([
-    images.spacePhoto ? uploadImage(id, images.spacePhoto, "space.jpg", "image/jpeg") : null,
-    images.referenceImage ? uploadImage(id, images.referenceImage, "reference.jpg", "image/jpeg") : null,
-    images.generatedImage ? uploadImage(id, images.generatedImage, "generated.png", "image/png") : null,
+    images.spacePhoto ? uploadImage(id, images.spacePhoto, "space.jpg") : null,
+    images.referenceImage ? uploadImage(id, images.referenceImage, "reference.jpg") : null,
+    images.generatedImage ? uploadImage(id, images.generatedImage, "generated.png") : null,
   ]);
 
   const { error } = await supabase.from("submissions").insert({
@@ -171,7 +186,7 @@ export async function saveSubmission(
 
 export async function saveGeneratedImage(id: string, imageBase64: string): Promise<void> {
   const buffer = Buffer.from(imageBase64, "base64");
-  const url = await uploadImage(id, buffer, "generated.png", "image/png");
+  const url = await uploadImage(id, buffer, "generated.png");
 
   if (url) {
     await supabase

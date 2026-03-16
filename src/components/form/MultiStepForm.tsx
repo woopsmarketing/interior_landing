@@ -124,6 +124,7 @@ export default function MultiStepForm() {
   const [isDebugOpen, setIsDebugOpen] = useState(false);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [pushStatus, setPushStatus] = useState<"idle" | "subscribed" | "denied" | "unsupported">("idle");
+  const [showPushModal, setShowPushModal] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
   const [loadingStep, setLoadingStep] = useState<"step1" | "step2" | "step3">("step1");
@@ -262,7 +263,7 @@ export default function MultiStepForm() {
 
         const res = await fetch("/api/submissions", { method: "POST", body });
         const result = await res.json();
-        if (result.id) setSubmissionId(result.id);
+        if (result.id) { setSubmissionId(result.id); setShowPushModal(true); }
       } catch {
         console.error("[saveToAdmin] 저장 실패");
       }
@@ -377,6 +378,79 @@ export default function MultiStepForm() {
   if (isSubmitted) {
     return (
       <div id="form" className="w-full max-w-lg mx-auto">
+        {/* 푸시 알림 모달 */}
+        {showPushModal && pushStatus === "idle" && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+            <div className="w-full max-w-sm rounded-2xl bg-white shadow-2xl overflow-hidden">
+              {/* 상단 배너 */}
+              <div className="bg-gradient-to-br from-orange-500 to-orange-600 px-6 py-6 text-center">
+                <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-white/20">
+                  <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-white">견적 도착 알림 받기</h3>
+                <p className="mt-1 text-sm text-orange-100">무료로 설정할 수 있어요</p>
+              </div>
+              {/* 본문 */}
+              <div className="px-6 py-5">
+                <ul className="space-y-3 text-sm text-gray-700">
+                  <li className="flex items-start gap-2">
+                    <span className="mt-0.5 text-orange-500">✓</span>
+                    <span>업체에서 <strong>견적을 보내면 즉시</strong> 알림을 받아요</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="mt-0.5 text-orange-500">✓</span>
+                    <span>브라우저를 닫아도 알림이 도착해요</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="mt-0.5 text-orange-500">✓</span>
+                    <span>광고 없이 견적 관련 알림만 발송해요</span>
+                  </li>
+                </ul>
+                <button
+                  onClick={async () => {
+                    if (!("Notification" in window) || !("serviceWorker" in navigator)) {
+                      setPushStatus("unsupported");
+                      setShowPushModal(false);
+                      return;
+                    }
+                    try {
+                      const permission = await Notification.requestPermission();
+                      if (permission !== "granted") { setPushStatus("denied"); setShowPushModal(false); return; }
+                      const reg = await navigator.serviceWorker.ready;
+                      const sub = await reg.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+                      });
+                      await fetch("/api/push/subscribe", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          submissionId,
+                          subscription: sub.toJSON(),
+                          customerName: formData.name,
+                        }),
+                      });
+                      setPushStatus("subscribed");
+                      setShowPushModal(false);
+                    } catch { setPushStatus("unsupported"); setShowPushModal(false); }
+                  }}
+                  className="mt-5 w-full rounded-xl bg-orange-500 py-3.5 text-sm font-bold text-white hover:bg-orange-600 active:bg-orange-700 transition-colors"
+                >
+                  알림 허용하기
+                </button>
+                <button
+                  onClick={() => setShowPushModal(false)}
+                  className="mt-2 w-full py-2.5 text-sm text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  나중에 하기
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* 라이트박스 전체화면 오버레이 */}
         {isLightboxOpen && (
           <div
@@ -534,45 +608,7 @@ export default function MultiStepForm() {
               </div>
             )}
 
-            {/* 푸시 알림 CTA */}
-            {submissionId && pushStatus === "idle" && (
-              <div className="mt-6 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 px-5 py-5 text-white text-left">
-                <p className="text-sm font-bold mb-1">견적 도착 알림 받기</p>
-                <p className="text-xs text-orange-100 mb-3">
-                  업체에서 견적을 보내면 즉시 알림을 보내드립니다. 브라우저를 닫아도 알림이 도착합니다.
-                </p>
-                <button
-                  onClick={async () => {
-                    if (!("Notification" in window) || !("serviceWorker" in navigator)) {
-                      setPushStatus("unsupported");
-                      return;
-                    }
-                    try {
-                      const permission = await Notification.requestPermission();
-                      if (permission !== "granted") { setPushStatus("denied"); return; }
-                      const reg = await navigator.serviceWorker.ready;
-                      const sub = await reg.pushManager.subscribe({
-                        userVisibleOnly: true,
-                        applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
-                      });
-                      await fetch("/api/push/subscribe", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          submissionId,
-                          subscription: sub.toJSON(),
-                          customerName: formData.name,
-                        }),
-                      });
-                      setPushStatus("subscribed");
-                    } catch { setPushStatus("unsupported"); }
-                  }}
-                  className="w-full rounded-lg bg-white text-orange-600 py-2.5 text-sm font-bold hover:bg-orange-50 transition-colors"
-                >
-                  알림 허용하기
-                </button>
-              </div>
-            )}
+            {/* 푸시 알림 상태 표시 (모달 닫은 후) */}
             {pushStatus === "subscribed" && (
               <div className="mt-5 rounded-xl bg-green-50 border border-green-100 px-4 py-3 text-center">
                 <p className="text-sm font-medium text-green-700">알림이 설정되었습니다!</p>
@@ -582,6 +618,15 @@ export default function MultiStepForm() {
               <div className="mt-5 rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 text-center">
                 <p className="text-xs text-gray-500">알림이 차단되었습니다. 브라우저 설정에서 허용해주세요.</p>
               </div>
+            )}
+            {/* 모달 닫고 나서 fallback 버튼 */}
+            {submissionId && pushStatus === "idle" && !showPushModal && (
+              <button
+                onClick={() => setShowPushModal(true)}
+                className="mt-4 w-full rounded-xl border border-orange-200 bg-orange-50 py-3 text-sm font-medium text-orange-600 hover:bg-orange-100 transition-colors"
+              >
+                견적 도착 알림 받기
+              </button>
             )}
 
             {/* 내 견적 페이지 링크 */}
