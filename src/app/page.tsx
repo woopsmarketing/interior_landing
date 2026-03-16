@@ -13,6 +13,7 @@ const ComparisonTable = dynamic(
 const HowItWorks = dynamic(() => import("@/components/sections/HowItWorks"));
 const ServiceStats = dynamic(() => import("@/components/sections/ServiceStats"));
 const SocialProof = dynamic(() => import("@/components/sections/SocialProof"));
+const LiveRequests = dynamic(() => import("@/components/sections/LiveRequests"));
 const WhoFor = dynamic(() => import("@/components/sections/WhoFor"));
 const Outcomes = dynamic(() => import("@/components/sections/Outcomes"));
 const Trust = dynamic(() => import("@/components/sections/Trust"));
@@ -32,6 +33,7 @@ export default function Home() {
       <div id="compare"><ComparisonTable /></div>
       <div id="how"><HowItWorks /></div>
       <div id="review"><SocialProof /></div>
+      <div id="live"><LiveRequests /></div>
       <div id="who"><WhoFor /></div>
       <div id="outcome"><Outcomes /></div>
       <div id="trust"><Trust /></div>

@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.99.1",
     "@types/web-push": "^3.6.4",
     "lucide-react": "^0.577.0",
     "motion": "^12.35.2",
@@ -29,9 +30,9 @@
     "typescript": "^5"
   },
   "optionalDependencies": {
-    "lightningcss-linux-x64-gnu": "1.31.1",
-    "lightningcss-win32-x64-msvc": "1.31.1",
     "@tailwindcss/oxide-linux-x64-gnu": "4.2.1",
-    "@tailwindcss/oxide-win32-x64-msvc": "4.2.1"
+    "@tailwindcss/oxide-win32-x64-msvc": "4.2.1",
+    "lightningcss-linux-x64-gnu": "1.31.1",
+    "lightningcss-win32-x64-msvc": "^1.31.1"
   }
 }

@@ -1,12 +1,9 @@
-import fs from "fs/promises";
-import path from "path";
-
-const DATA_DIR = path.join(process.cwd(), "data", "submissions");
-const IMAGES_DIR = path.join(process.cwd(), "data", "images");
+import { supabase } from "./supabase";
 
 export interface SubmissionData {
   id: string;
   createdAt: string;
+  status: string;
   // Step 1
   spaceType: string;
   region: string;
@@ -26,8 +23,12 @@ export interface SubmissionData {
   renovationNote: string;
   // Step 4
   additionalRequest: string;
+  spacePhotoUrl: string | null;
+  referenceImageUrl: string | null;
+  generatedImageUrl: string | null;
   hasSpacePhoto: boolean;
   hasReferenceImage: boolean;
+  hasGeneratedImage: boolean;
   // Step 5
   name: string;
   phone: string;
@@ -37,125 +38,193 @@ export interface SubmissionData {
   agreePrivacy: boolean;
   agreeConsult: boolean;
   agreeMarketing: boolean;
-  // AI
-  hasGeneratedImage: boolean;
+  // Admin
+  adminNote: string;
 }
 
-async function ensureDirs() {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  await fs.mkdir(IMAGES_DIR, { recursive: true });
+// DB row → SubmissionData
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function fromRow(row: any): SubmissionData {
+  return {
+    id: row.id,
+    createdAt: row.created_at,
+    status: row.status ?? "received",
+    spaceType: row.space_type ?? "",
+    region: row.region ?? "",
+    area: row.area ?? "",
+    areaUnknown: row.area_unknown ?? false,
+    currentCondition: row.current_condition ?? "",
+    buildingAge: row.building_age ?? "",
+    constructionScope: row.construction_scope ?? "",
+    desiredTiming: row.desired_timing ?? "",
+    budget: row.budget ?? "",
+    constructionPurpose: row.construction_purpose ?? "",
+    scheduleFlexibility: row.schedule_flexibility ?? "",
+    occupancyDuringWork: row.occupancy_during_work ?? "",
+    renovationAreas: row.renovation_areas ?? [],
+    renovationNote: row.renovation_note ?? "",
+    additionalRequest: row.additional_request ?? "",
+    spacePhotoUrl: row.space_photo_url ?? null,
+    referenceImageUrl: row.reference_image_url ?? null,
+    generatedImageUrl: row.generated_image_url ?? null,
+    hasSpacePhoto: row.has_space_photo ?? false,
+    hasReferenceImage: row.has_reference_image ?? false,
+    hasGeneratedImage: row.has_generated_image ?? false,
+    name: row.name ?? "",
+    phone: row.phone ?? "",
+    email: row.email ?? "",
+    contactMethod: row.contact_method ?? [],
+    availableTime: row.available_time ?? [],
+    agreePrivacy: row.agree_privacy ?? false,
+    agreeConsult: row.agree_consult ?? false,
+    agreeMarketing: row.agree_marketing ?? false,
+    adminNote: row.admin_note ?? "",
+  };
 }
 
 function generateId(): string {
-  const now = new Date();
-  const date = now.toISOString().slice(0, 10).replace(/-/g, "");
+  const date = new Date().toISOString().slice(0, 10).replace(/-/g, "");
   const rand = Math.random().toString(36).slice(2, 8);
   return `${date}_${rand}`;
 }
 
+async function uploadImage(
+  id: string,
+  buffer: Buffer,
+  filename: string,
+  contentType: string
+): Promise<string | null> {
+  const { error } = await supabase.storage
+    .from("interior-images")
+    .upload(`${id}/${filename}`, buffer, { contentType, upsert: true });
+
+  if (error) {
+    console.error(`[storage] upload error (${filename}):`, error.message);
+    return null;
+  }
+
+  const { data } = supabase.storage
+    .from("interior-images")
+    .getPublicUrl(`${id}/${filename}`);
+
+  return data.publicUrl;
+}
+
 export async function saveSubmission(
-  data: Omit<SubmissionData, "id" | "createdAt" | "hasSpacePhoto" | "hasReferenceImage" | "hasGeneratedImage">,
+  data: Omit<
+    SubmissionData,
+    "id" | "createdAt" | "status" | "hasSpacePhoto" | "hasReferenceImage" | "hasGeneratedImage" | "spacePhotoUrl" | "referenceImageUrl" | "generatedImageUrl" | "adminNote"
+  >,
   images: {
     spacePhoto?: Buffer | null;
     referenceImage?: Buffer | null;
     generatedImage?: Buffer | null;
   }
 ): Promise<string> {
-  await ensureDirs();
-
   const id = generateId();
-  const imageDir = path.join(IMAGES_DIR, id);
-  await fs.mkdir(imageDir, { recursive: true });
 
-  const hasSpacePhoto = !!images.spacePhoto;
-  const hasReferenceImage = !!images.referenceImage;
-  const hasGeneratedImage = !!images.generatedImage;
+  const [spacePhotoUrl, referenceImageUrl, generatedImageUrl] = await Promise.all([
+    images.spacePhoto ? uploadImage(id, images.spacePhoto, "space.jpg", "image/jpeg") : null,
+    images.referenceImage ? uploadImage(id, images.referenceImage, "reference.jpg", "image/jpeg") : null,
+    images.generatedImage ? uploadImage(id, images.generatedImage, "generated.png", "image/png") : null,
+  ]);
 
-  // 이미지 파일 저장
-  if (images.spacePhoto) {
-    await fs.writeFile(path.join(imageDir, "space.jpg"), images.spacePhoto);
-  }
-  if (images.referenceImage) {
-    await fs.writeFile(path.join(imageDir, "reference.jpg"), images.referenceImage);
-  }
-  if (images.generatedImage) {
-    await fs.writeFile(path.join(imageDir, "generated.png"), images.generatedImage);
-  }
-
-  const submission: SubmissionData = {
-    ...data,
+  const { error } = await supabase.from("submissions").insert({
     id,
-    createdAt: new Date().toISOString(),
-    hasSpacePhoto,
-    hasReferenceImage,
-    hasGeneratedImage,
-  };
+    status: "received",
+    space_type: data.spaceType,
+    region: data.region,
+    area: data.area,
+    area_unknown: data.areaUnknown,
+    current_condition: data.currentCondition,
+    building_age: data.buildingAge,
+    construction_scope: data.constructionScope,
+    desired_timing: data.desiredTiming,
+    budget: data.budget,
+    construction_purpose: data.constructionPurpose,
+    schedule_flexibility: data.scheduleFlexibility,
+    occupancy_during_work: data.occupancyDuringWork,
+    renovation_areas: data.renovationAreas,
+    renovation_note: data.renovationNote,
+    additional_request: data.additionalRequest,
+    space_photo_url: spacePhotoUrl,
+    reference_image_url: referenceImageUrl,
+    generated_image_url: generatedImageUrl,
+    has_space_photo: !!spacePhotoUrl,
+    has_reference_image: !!referenceImageUrl,
+    has_generated_image: !!generatedImageUrl,
+    name: data.name,
+    phone: data.phone,
+    email: data.email,
+    contact_method: data.contactMethod,
+    available_time: data.availableTime,
+    agree_privacy: data.agreePrivacy,
+    agree_consult: data.agreeConsult,
+    agree_marketing: data.agreeMarketing,
+    admin_note: "",
+  });
 
-  await fs.writeFile(
-    path.join(DATA_DIR, `${id}.json`),
-    JSON.stringify(submission, null, 2),
-    "utf-8"
-  );
+  if (error) throw new Error(`[submissions] insert error: ${error.message}`);
 
   return id;
 }
 
 export async function saveGeneratedImage(id: string, imageBase64: string): Promise<void> {
-  const imageDir = path.join(IMAGES_DIR, id);
-  await fs.mkdir(imageDir, { recursive: true });
   const buffer = Buffer.from(imageBase64, "base64");
-  await fs.writeFile(path.join(imageDir, "generated.png"), buffer);
+  const url = await uploadImage(id, buffer, "generated.png", "image/png");
 
-  // submission JSON 업데이트
-  const filePath = path.join(DATA_DIR, `${id}.json`);
-  try {
-    const raw = await fs.readFile(filePath, "utf-8");
-    const data = JSON.parse(raw) as SubmissionData;
-    data.hasGeneratedImage = true;
-    await fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf-8");
-  } catch {
-    // submission 파일이 없으면 무시
+  if (url) {
+    await supabase
+      .from("submissions")
+      .update({ generated_image_url: url, has_generated_image: true })
+      .eq("id", id);
   }
 }
 
 export async function listSubmissions(): Promise<SubmissionData[]> {
-  await ensureDirs();
+  const { data, error } = await supabase
+    .from("submissions")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-  const files = await fs.readdir(DATA_DIR);
-  const jsonFiles = files.filter((f) => f.endsWith(".json"));
-
-  const submissions: SubmissionData[] = [];
-  for (const file of jsonFiles) {
-    try {
-      const raw = await fs.readFile(path.join(DATA_DIR, file), "utf-8");
-      submissions.push(JSON.parse(raw));
-    } catch {
-      // 파싱 실패 시 무시
-    }
+  if (error) {
+    console.error("[submissions] list error:", error.message);
+    return [];
   }
 
-  // 최신 순 정렬
-  submissions.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  return submissions;
+  return (data ?? []).map(fromRow);
 }
 
 export async function getSubmission(id: string): Promise<SubmissionData | null> {
-  try {
-    const raw = await fs.readFile(path.join(DATA_DIR, `${id}.json`), "utf-8");
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
+  const { data, error } = await supabase
+    .from("submissions")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error || !data) return null;
+
+  return fromRow(data);
 }
 
-export async function getSubmissionImage(
+export async function updateSubmissionStatus(id: string, status: string): Promise<void> {
+  const { error } = await supabase
+    .from("submissions")
+    .update({ status })
+    .eq("id", id);
+
+  if (error) throw new Error(`[submissions] update status error: ${error.message}`);
+}
+
+// 이미지는 이제 Storage URL로 직접 접근 — 하위 호환용 URL 반환
+export async function getSubmissionImageUrl(
   id: string,
   type: "space" | "reference" | "generated"
-): Promise<Buffer | null> {
-  const filename = type === "space" ? "space.jpg" : type === "reference" ? "reference.jpg" : "generated.png";
-  try {
-    return await fs.readFile(path.join(IMAGES_DIR, id, filename));
-  } catch {
-    return null;
-  }
+): Promise<string | null> {
+  const submission = await getSubmission(id);
+  if (!submission) return null;
+
+  if (type === "space") return submission.spacePhotoUrl;
+  if (type === "reference") return submission.referenceImageUrl;
+  return submission.generatedImageUrl;
 }

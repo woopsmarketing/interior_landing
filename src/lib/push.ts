@@ -1,10 +1,6 @@
 import webpush from "web-push";
-import fs from "fs/promises";
-import path from "path";
+import { supabase } from "./supabase";
 
-const SUBSCRIPTIONS_DIR = path.join(process.cwd(), "data", "push-subscriptions");
-
-// VAPID 키 설정 — .env.local에서 읽어옴
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "";
 const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || "";
 const VAPID_SUBJECT = process.env.VAPID_SUBJECT || "mailto:admin@example.com";
@@ -20,49 +16,41 @@ export interface PushSubscriptionData {
   customerName: string;
 }
 
-async function ensureDir() {
-  await fs.mkdir(SUBSCRIPTIONS_DIR, { recursive: true });
-}
-
-// 푸시 구독 저장 (submissionId와 연결)
 export async function savePushSubscription(
   submissionId: string,
   subscription: webpush.PushSubscription,
   customerName: string
 ): Promise<void> {
-  await ensureDir();
-
-  const data: PushSubscriptionData = {
-    submissionId,
+  const { error } = await supabase.from("push_subscriptions").insert({
+    submission_id: submissionId,
     subscription,
-    createdAt: new Date().toISOString(),
-    customerName,
-  };
+    customer_name: customerName,
+  });
 
-  await fs.writeFile(
-    path.join(SUBSCRIPTIONS_DIR, `${submissionId}.json`),
-    JSON.stringify(data, null, 2),
-    "utf-8"
-  );
+  if (error) throw new Error(`[push] save subscription error: ${error.message}`);
 }
 
-// 특정 고객에게 푸시 발송
 export async function sendPushToCustomer(
   submissionId: string,
   payload: { title: string; body: string; url: string }
 ): Promise<{ success: boolean; error?: string }> {
-  try {
-    const raw = await fs.readFile(
-      path.join(SUBSCRIPTIONS_DIR, `${submissionId}.json`),
-      "utf-8"
-    );
-    const data: PushSubscriptionData = JSON.parse(raw);
+  const { data, error } = await supabase
+    .from("push_subscriptions")
+    .select("subscription")
+    .eq("submission_id", submissionId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
 
+  if (error || !data) {
+    return { success: false, error: "구독 정보 없음" };
+  }
+
+  try {
     await webpush.sendNotification(
-      data.subscription,
+      data.subscription as webpush.PushSubscription,
       JSON.stringify(payload)
     );
-
     return { success: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : "알 수 없는 오류";
@@ -71,12 +59,11 @@ export async function sendPushToCustomer(
   }
 }
 
-// 구독 존재 여부 확인
 export async function hasSubscription(submissionId: string): Promise<boolean> {
-  try {
-    await fs.access(path.join(SUBSCRIPTIONS_DIR, `${submissionId}.json`));
-    return true;
-  } catch {
-    return false;
-  }
+  const { count } = await supabase
+    .from("push_subscriptions")
+    .select("id", { count: "exact", head: true })
+    .eq("submission_id", submissionId);
+
+  return (count ?? 0) > 0;
 }

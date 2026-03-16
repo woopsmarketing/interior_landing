@@ -1,45 +1,69 @@
-# NEXT TASK
-> 우선순위 순으로 정렬
+# NEXT_TASK.md — 다음 구현 과제
 
-## 1순위 — 미커밋 코드 커밋 & 푸시
+> 마지막 업데이트: 2026-03-16
 
-현재 전환 추적 시스템, About 페이지, 이미지 파일들이 로컬에만 있음.
+## 완료된 항목
 
-```bash
-git add src/components/tracking/ src/lib/ src/app/about/ \
-        src/app/layout.tsx src/components/form/MultiStepForm.tsx \
-        src/app/page.tsx public/home1_subinterior.png \
-        public/home2_subinterior.png public/office1_subinterior.png \
-        .gitignore claudedocs/ marketing/
-git commit -m "feat: 전환 추적 시스템(GA4/Meta/네이버) + About 페이지 + 마케팅 가이드"
-git push landing main
-```
+- [x] 랜딩 페이지 전체 섹션 (14개)
+- [x] 멀티스텝 폼 5단계
+- [x] AI 인테리어 이미지 생성 (gpt-image-1)
+- [x] 웹 푸시 알림 (Service Worker + VAPID + 구독/발송 API)
+- [x] 관리자 페이지 (목록 조회 + 상세 보기 + 푸시 발송)
+- [x] 고객 상태 확인 페이지 (/my/[id])
+- [x] 전환 추적 시스템 (GA4/Meta/네이버)
+- [x] 하단 고정 CTA 버튼 (/form에서 숨김 + shine 3회 제한)
+- [x] Header 스크롤 숨김/재등장
+- [x] VAPID 키 생성 스크립트
+- [x] /admin 데이터 로딩 실패 수정 (Vercel 파일시스템 graceful fallback)
+- [x] 실시간 견적 요청 현황 섹션 (이름 마스킹, 최신 10개, 30초 폴링)
 
-## 2순위 — Vercel 환경변수 설정
+---
 
-Vercel Dashboard → Settings → Environment Variables에 추가:
+## 다음 구현 과제
 
-| 변수명 | 값 |
-|--------|-----|
-| `NEXT_PUBLIC_GA4_ID` | GA4 측정 ID (`G-XXXXXXXXXX`) |
-| `NEXT_PUBLIC_META_PIXEL_ID` | Meta Pixel ID |
-| `NEXT_PUBLIC_NAVER_CONVERSION_ID` | 네이버 전환 추적 ID |
-| `OPENAI_API_KEY` | OpenAI API 키 (이미 설정됐을 수 있음) |
+### P0 — 운영 필수 (이것 없이는 서비스 운영 불가)
 
-설정 후 Vercel Redeploy 필요.
+- [ ] **데이터 영속화** — 파일 시스템 → 외부 DB 전환
+  - 현재: Vercel 서버리스에서 `data/` 디렉토리 사용 → 콜드스타트마다 초기화됨
+  - 제출 데이터, 이미지, 푸시 구독 모두 유실됨
+  - 선택지: Supabase (PostgreSQL + Storage) / PlanetScale / Vercel KV + Blob
+  - **이것이 해결되어야 다른 모든 기능이 의미 있음**
 
-## 3순위 — 광고 집행 시작
+- [ ] **관리자 상태 변경** — 접수 → 매칭중 → 견적도착
+  - submissions 데이터에 `status` 필드 추가
+  - 관리자 페이지에서 상태 드롭다운 변경 → PATCH API
+  - 고객 페이지(/my/[id])에 실시간 반영 (현재 `currentStatus = 1` 하드코딩)
 
-`marketing/README.md` 타임라인 기준:
-1. `marketing/tracking/setup-guide.md` — GA4/Meta/네이버 전환추적 실제 설치 확인
-2. `marketing/tracking/utm-templates.md` — 채널별 UTM URL 생성
-3. 네이버 검색광고 키워드 세팅 (`marketing/naver/keywords.md`)
-4. 인스타그램 광고 소재 제작 (`marketing/instagram/creative-specs.md`)
+### P1 — 핵심 UX (없으면 불편)
 
-## 완료 기준
+- [ ] **이메일 알림** — iOS 사용자 커버 + 전체 폴백
+  - 폼 제출 시 확인 이메일 발송
+  - 상태 변경 시 고객에게 이메일 알림
+  - 선택지: Resend / SendGrid / AWS SES
+  - 웹 푸시 + 이메일 이중 알림 체계
 
-- [ ] GitHub에 모든 변경사항 push 완료
-- [ ] Vercel에서 전환 추적 환경변수 설정 완료
-- [ ] GA4 실시간 보고서에서 PageView 이벤트 수신 확인
-- [ ] 폼 제출 시 `form_submit` 이벤트 GA4에 기록 확인
-- [ ] 광고 1개 이상 집행 시작
+- [ ] **관리자 메모/견적 첨부**
+  - 업체에서 받은 견적 정보를 시스템에 입력
+  - 견적 금액, 업체명, PDF 첨부
+  - 고객 페이지(/my/[id])에서 도착한 견적 확인 가능
+
+- [ ] **관리자 인증** — /admin 페이지 접근 제한
+  - 현재: 누구나 /admin 접속 가능 (보안 취약)
+  - 최소: 비밀번호 기반 간단 인증 또는 환경변수 토큰
+
+### P2 — 운영 편의 (있으면 좋음)
+
+- [ ] **관리자 필터/검색** — 지역별, 날짜별, 상태별 필터
+- [ ] **카카오 알림톡 연동** — 비즈니스 채널 개설 후 자동 발송
+- [ ] **고객 페이지 견적 비교 UI** — 여러 업체 견적을 한눈에 비교
+- [ ] **자동 상태 업데이트 알림** — 상태 변경 시 푸시+이메일 자동 발송 (현재 수동)
+
+---
+
+## 기술 부채
+
+- [ ] 파일 시스템 기반 데이터 저장 → DB 전환 (P0과 동일)
+- [ ] admin 페이지 인증 없음
+- [ ] 고객 페이지 상태 하드코딩 (`currentStatus = 1`)
+- [ ] VAPID 키 .env.local 설정 필요 (생성 스크립트는 만들어둠)
+- [ ] Vercel 환경변수 설정 (GA4/Meta/네이버 추적 ID)

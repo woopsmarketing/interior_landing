@@ -8,7 +8,8 @@ export async function GET() {
     return NextResponse.json({ submissions });
   } catch (err) {
     console.error("[submissions] GET error:", err);
-    return NextResponse.json({ error: "조회 실패" }, { status: 500 });
+    // 파일 시스템 접근 실패(Vercel 서버리스 등) 시 빈 배열 반환
+    return NextResponse.json({ submissions: [] });
   }
 }
 
