@@ -58,9 +58,9 @@ export default function CompanyRegisterPage() {
             </div>
             <h2 className="text-lg font-bold text-gray-900 mb-2">가입 완료</h2>
             <p className="text-sm text-gray-500 mb-6">
-              관리자 승인 후 이용 가능합니다.
+              가입이 완료되었습니다.
               <br />
-              승인 완료 시 로그인할 수 있습니다.
+              지금 바로 로그인하여 이용할 수 있습니다.
             </p>
             <Link
               href="/company/login"

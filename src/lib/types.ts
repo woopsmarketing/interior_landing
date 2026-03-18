@@ -116,6 +116,7 @@ export interface AdminSubmission {
   agreeConsult: boolean;
   agreeMarketing: boolean;
   hasGeneratedImage: boolean;
+  status: string;
 }
 
 /** 관리자가 보는 업체 정보 (간략) */

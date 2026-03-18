@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedCompany } from "@/lib/company-auth";
 import { supabaseAdmin } from "@/lib/supabase";
 import { sendPushToCustomer } from "@/lib/push";
+import { sendEmail, customerQuoteArrivedEmail } from "@/lib/email";
 
 // POST — 견적 응답 제출
 export async function POST(request: NextRequest) {
@@ -42,6 +43,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    // 고객 정보 조회 (이메일 알림용)
+    const { data: submission } = await supabaseAdmin
+      .from("submissions")
+      .select("name, email")
+      .eq("id", submission_id)
+      .single();
+
     // 고객에게 자동 푸시 알림 발송 (실패해도 응답 저장은 유지)
     try {
       await sendPushToCustomer(submission_id, {
@@ -51,6 +59,19 @@ export async function POST(request: NextRequest) {
       });
     } catch (pushErr) {
       console.error("[companies/responses] 푸시 발송 실패:", pushErr);
+    }
+
+    // 고객에게 이메일 알림 발송 (실패해도 응답 저장은 유지)
+    if (submission?.email) {
+      try {
+        await sendEmail({
+          to: submission.email,
+          subject: `[AI 인테리어] ${company.company_name}에서 견적을 보냈습니다`,
+          html: customerQuoteArrivedEmail(submission.name, company.company_name, submission_id),
+        });
+      } catch (emailErr) {
+        console.error("[companies/responses] 이메일 발송 실패:", emailErr);
+      }
     }
 
     return NextResponse.json(data, { status: 201 });

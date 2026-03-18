@@ -1,6 +1,6 @@
 # NEXT_TASK.md — 다음 구현 과제
 
-> 마지막 업데이트: 2026-03-16
+> 마지막 업데이트: 2026-03-18
 
 ## 완료된 항목
 
@@ -14,32 +14,31 @@
 - [x] 하단 고정 CTA 버튼 (/form에서 숨김 + shine 3회 제한)
 - [x] Header 스크롤 숨김/재등장
 - [x] VAPID 키 생성 스크립트
-- [x] /admin 데이터 로딩 실패 수정 (Vercel 파일시스템 graceful fallback)
-- [x] 실시간 견적 요청 현황 섹션 (이름 마스킹, 최신 10개, 30초 폴링)
+- [x] /admin 데이터 로딩 실패 수정
+- [x] 실시간 견적 요청 현황 섹션
 - [x] **업체 포털 시스템** — 회원가입/로그인/대시보드/프로필/포트폴리오 CRUD
 - [x] **업체 견적 응답** — 업체가 견적 요청에 메시지+견적금액으로 응답
 - [x] **관리자 업체 승인** — /admin 업체 관리 탭 (승인/거절 UI)
 - [x] **고객 업체 열람** — 자기 견적에 응답한 업체의 소개/포트폴리오 열람
-- [x] **next/image remotePatterns** — Supabase Storage 이미지 도메인 설정
+- [x] **관리자 상태 변경** — 접수→매칭중→견적도착 버튼 UI + DB 반영 + 자동 푸시
+- [x] **고객 페이지 상태 동적 반영** — currentStatus 하드코딩 제거, DB status 기반
+- [x] **이메일 알림** — 업체 승인/거절 시 업체 이메일, 견적 응답 시 고객 이메일 (Resend)
 
 ---
 
 ## 다음 구현 과제
 
-### P0 — 운영 필수
+### P0 — 운영 필수 (설정 작업, 코드 아님)
 
-- [ ] **Supabase 스키마 적용** — companies, portfolios, company_responses 테이블 + company-assets 버킷 실제 생성
-  - `supabase/schema.sql`의 섹션 4~7 SQL을 Supabase SQL Editor에서 실행
-  - COMPANY_SECRET 환경변수 설정 (.env.local + Vercel)
-
-- [ ] **관리자 상태 변경** — 접수 → 매칭중 → 견적도착
-  - submissions 데이터에 `status` 필드 기반 상태 변경 UI
-  - 고객 페이지(/my/[id])에 실시간 반영 (현재 `currentStatus = 1` 하드코딩)
+- [ ] **Supabase 스키마 적용** — supabase/schema.sql 섹션 4~7을 Supabase SQL Editor에서 실행
+- [ ] **환경변수 설정** (.env.local + Vercel)
+  - `COMPANY_SECRET` — 업체 토큰 서명용
+  - `RESEND_API_KEY` — 이메일 발송용
+  - `EMAIL_FROM` — 발신 이메일 (예: onboarding@resend.dev)
+  - `NEXT_PUBLIC_SITE_URL` — 이메일 내 링크용
 
 ### P1 — 핵심 UX
 
-- [ ] **이메일 알림** — 업체 승인/거절 시 업체에게 이메일 발송
-- [ ] **업체 응답 시 고객 알림** — 업체가 견적 응답하면 고객에게 푸시+이메일 알림
 - [ ] **업체 지역/분야 매칭** — 견적 요청의 지역/공간유형에 맞는 업체에게만 견적 요청 노출
 - [ ] **업체 프로필 공개 미리보기** — 업체 대시보드에서 고객에게 보이는 모습 미리보기
 
@@ -55,7 +54,5 @@
 
 ## 기술 부채
 
-- [ ] 고객 페이지 상태 하드코딩 (`currentStatus = 1`)
-- [ ] VAPID 키 .env.local 설정 필요 (생성 스크립트는 만들어둠)
+- [ ] VAPID 키 .env.local 설정 필요 (생성 스크립트: scripts/generate-vapid.js)
 - [ ] Vercel 환경변수 설정 (GA4/Meta/네이버 추적 ID)
-- [ ] COMPANY_SECRET 환경변수 설정 필요

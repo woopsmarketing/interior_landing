@@ -16,17 +16,52 @@ function InfoRow({ label, value }: { label: string; value: string | string[] | b
   );
 }
 
+const STATUS_OPTIONS = [
+  { value: "received", label: "접수", color: "bg-gray-100 text-gray-600" },
+  { value: "matching", label: "매칭 중", color: "bg-blue-100 text-blue-600" },
+  { value: "quoted", label: "견적 도착", color: "bg-green-100 text-green-600" },
+] as const;
+
 export default function SubmissionDetail({
   submission,
   onBack,
+  onStatusChange,
 }: {
   submission: AdminSubmission;
   onBack: () => void;
+  onStatusChange?: (id: string, status: string) => void;
 }) {
+  const [currentStatus, setCurrentStatus] = useState(submission.status ?? "received");
+  const [statusChanging, setStatusChanging] = useState(false);
+  const [statusResult, setStatusResult] = useState<"success" | "error" | null>(null);
   const [pushMsg, setPushMsg] = useState("");
   const [pushSending, setPushSending] = useState(false);
   const [pushResult, setPushResult] = useState<"success" | "error" | null>(null);
   const L = SUBMISSION_FIELD_LABELS;
+
+  const handleStatusChange = async (newStatus: string) => {
+    if (newStatus === currentStatus) return;
+    setStatusChanging(true);
+    setStatusResult(null);
+    try {
+      const res = await fetch(`/api/submissions/${submission.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (res.ok) {
+        setCurrentStatus(newStatus);
+        setStatusResult("success");
+        onStatusChange?.(submission.id, newStatus);
+      } else {
+        setStatusResult("error");
+      }
+    } catch {
+      setStatusResult("error");
+    } finally {
+      setStatusChanging(false);
+    }
+  };
 
   const handleSendPush = async () => {
     if (!pushMsg.trim()) return;
@@ -79,6 +114,31 @@ export default function SubmissionDetail({
           {submission.hasGeneratedImage && (
             <span className="rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-600">AI생성</span>
           )}
+        </div>
+      </div>
+
+      {/* 상태 변경 */}
+      <div className="mb-6 rounded-xl border border-gray-200 bg-white p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-bold text-gray-700">진행 상태</h3>
+          {statusResult === "success" && <span className="text-xs text-green-600">저장됨</span>}
+          {statusResult === "error" && <span className="text-xs text-red-500">저장 실패</span>}
+        </div>
+        <div className="flex gap-2">
+          {STATUS_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => handleStatusChange(opt.value)}
+              disabled={statusChanging}
+              className={`flex-1 rounded-lg border-2 py-2 text-sm font-semibold transition-all disabled:opacity-50 ${
+                currentStatus === opt.value
+                  ? `${opt.color} border-current`
+                  : "border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
         </div>
       </div>
 

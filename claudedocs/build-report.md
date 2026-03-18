@@ -1,89 +1,116 @@
 # Build Report
 
-생성일: 2026-03-16
+> 생성일: 2026-03-17
+> 검증 환경: WSL2 (Linux) + Next.js 15.5.12 + TypeScript
+
+---
 
 ## 요약
 
 | 검증 | 결과 | 상세 |
 |------|------|------|
-| TypeScript (`npx tsc --noEmit`) | PASS | 오류 0개 |
-| Next.js Build | SKIP | WSL2/NTFS 환경 hang 문제로 tsc 결과로 대체 판단 |
-| ESLint | SKIP | 별도 실행 생략 (tsc 기준 검증 완료) |
+| TypeScript | FAIL | 오류 5개 |
+| Next.js Build | FAIL | `.next/trace` 파일 잠금 (환경 문제) |
+| ESLint | FAIL | `eslint-config-next` 모듈 경로 오류 |
 
-## 최종 판정: 배포 가능 (TypeScript 기준)
-
-tsc --noEmit 출력 없음 = 타입 오류 0개. TypeScript 컴파일 기준 코드 정상.
+## 최종 판정: 배포 불가
 
 ---
 
 ## 발견된 이슈
 
-| 파일 | 라인 | 내용 | 심각도 |
+### 이슈 1 — TypeScript 타입 오류 (FAIL, 심각도: HIGH)
+
+`AdminSubmission` 인터페이스에 `status` 필드가 정의되어 있지 않으나,
+`admin/page.tsx`와 `SubmissionDetail.tsx` 두 파일에서 `status` 프로퍼티를 참조하고 있음.
+
+| 파일 | 라인 | 오류 | 심각도 |
 |------|------|------|--------|
-| `src/components/company/PortfolioTab.tsx` | 6 | `formatDate` import 후 미사용 | WARN |
+| `src/app/admin/page.tsx` | 270 | `Property 'status' does not exist on type 'AdminSubmission'` | HIGH |
+| `src/app/admin/page.tsx` | 271 | `Property 'status' does not exist on type 'AdminSubmission'` | HIGH |
+| `src/app/admin/page.tsx` | 274 | `Property 'status' does not exist on type 'AdminSubmission'` (×2) | HIGH |
+| `src/components/admin/SubmissionDetail.tsx` | 34 | `Property 'status' does not exist on type 'AdminSubmission'` | HIGH |
 
-### 상세 설명
+**원인 분석**
 
-`PortfolioTab.tsx`의 6번째 줄에서 `formatDate`를 `@/lib/utils`에서 import하고 있으나,
-파일 전체 어디에서도 `formatDate()`를 호출하지 않습니다.
+- `src/lib/types.ts` 의 `AdminSubmission` 인터페이스(88~119행)에 `status` 필드가 없음
+- `AdminCompany` 인터페이스(122~130행)에는 `status: string`이 정의되어 있음
+- `status` 필드가 나중에 DB 스키마에 추가되었으나 타입 정의에 반영되지 않은 것으로 추정
 
-TypeScript 컴파일은 미사용 import를 에러로 처리하지 않으므로 tsc는 통과했지만,
-ESLint `no-unused-vars` 또는 `@typescript-eslint/no-unused-vars` 규칙이 활성화된 경우
-빌드 경고 또는 에러로 이어질 수 있습니다.
+### 이슈 2 — `.next/trace` 파일 잠금 (FAIL, 심각도: HIGH)
 
----
+WSL2 환경에서 `.next/trace` 파일이 Windows 프로세스에 의해 잠겨 있어
+Next.js 빌드가 해당 파일을 열 수 없어 `ENOENT` 오류로 즉시 중단됨.
 
-## 신규 파일 상태 점검
+```
+uncaughtException [Error: ENOENT: no such file or directory, open '.../.next/trace']
+```
 
-| 파일 | 상태 | 비고 |
-|------|------|------|
-| `src/lib/company-auth.ts` | 정상 | crypto 기반 토큰 인증, 타입 정상 |
-| `src/app/api/admin/companies/route.ts` | 정상 | glob 확인 완료 |
-| `src/app/api/admin/companies/[id]/route.ts` | 정상 | glob 확인 완료 |
-| `src/app/api/companies/register/route.ts` | 정상 | glob 확인 완료 |
-| `src/app/api/companies/login/route.ts` | 정상 | glob 확인 완료 |
-| `src/app/api/companies/me/route.ts` | 정상 | glob 확인 완료 |
-| `src/app/api/companies/portfolios/route.ts` | 정상 | glob 확인 완료 |
-| `src/app/api/companies/portfolios/[id]/route.ts` | 정상 | glob 확인 완료 |
-| `src/app/api/companies/submissions/route.ts` | 정상 | glob 확인 완료 |
-| `src/app/api/companies/upload/route.ts` | 정상 | glob 확인 완료 |
-| `src/app/api/companies/responses/route.ts` | 정상 | glob 확인 완료 |
-| `src/app/api/submissions/[id]/responses/route.ts` | 정상 | 타입/로직 코드 리뷰 완료 |
-| `src/app/api/submissions/[id]/companies/[companyId]/route.ts` | 정상 | 타입/로직 코드 리뷰 완료 |
-| `src/app/company/login/page.tsx` | 정상 | glob 확인 완료 |
-| `src/app/company/register/page.tsx` | 정상 | glob 확인 완료 |
-| `src/app/company/dashboard/page.tsx` | 정상 | glob 확인 완료 |
-| `src/app/my/[id]/companies/[companyId]/page.tsx` | 정상 | formatDate 로컬 정의 후 사용, 타입 정상 |
-| `src/components/company/PortfolioTab.tsx` | WARN | formatDate import 미사용 |
-| `src/components/company/TagInput.tsx` | 정상 | glob 확인 완료 |
-| `src/components/company/ChipSelector.tsx` | 정상 | glob 확인 완료 |
-| `src/components/company/ProfileView.tsx` | 정상 | glob 확인 완료 |
-| `src/components/company/ProfileEditForm.tsx` | 정상 | glob 확인 완료 |
-| `src/components/company/ProfileTab.tsx` | 정상 | glob 확인 완료 |
-| `src/components/company/SubmissionsTab.tsx` | 정상 | glob 확인 완료 |
-| `src/components/company/ResponsesTab.tsx` | 정상 | glob 확인 완료 |
+**원인**: Windows 측 `node.exe` 또는 Next.js dev server가 `trace` 파일을 점유 중.
+
+### 이슈 3 — ESLint 설정 모듈 경로 오류 (FAIL, 심각도: MEDIUM)
+
+```
+Cannot find module 'eslint-config-next/core-web-vitals'
+Did you mean 'eslint-config-next/core-web-vitals.js'?
+```
+
+`eslint.config.mjs`에서 ESM import 경로에 `.js` 확장자 누락.
 
 ---
 
 ## 수정 권장 사항
 
-### 1. [WARN] PortfolioTab.tsx - formatDate 미사용 import 제거
+### 1. [필수 - P0] TypeScript 타입 오류 수정
 
-**파일**: `src/components/company/PortfolioTab.tsx`
-**라인**: 6번째 줄
-**현재 코드**:
+`src/lib/types.ts`의 `AdminSubmission` 인터페이스에 `status` 필드를 추가:
+
 ```typescript
-import { formatDate } from "@/lib/utils";
+export interface AdminSubmission {
+  // ... 기존 필드들
+  hasGeneratedImage: boolean;
+  status?: string;  // "received" | "matching" | "quoted" 등
+}
 ```
-**조치**: 해당 import 줄 삭제.
 
-`my/[id]/companies/[companyId]/page.tsx`는 `formatDate`를 로컬 함수로 직접 정의해서 사용하고 있습니다.
-`PortfolioTab.tsx`에는 날짜 표시 UI가 없으므로 import가 불필요합니다.
+또는 status 값을 구체적인 유니언 타입으로 정의:
+
+```typescript
+status?: "received" | "matching" | "quoted";
+```
+
+수정 대상 파일: `src/lib/types.ts` (119행 `hasGeneratedImage: boolean;` 다음 줄)
+
+### 2. [필수 - P0] `.next/trace` 파일 잠금 해제
+
+Windows 환경에서 다음 중 하나를 실행:
+
+- **방법 A**: Windows 작업 관리자 → `node.exe` 프로세스 전체 종료 후 빌드 재실행
+- **방법 B**: Windows PowerShell에서 `Stop-Process -Name node -Force` 실행
+- **방법 C**: PC 재시작 후 빌드 재실행
+
+이후 WSL2에서 `.next` 폴더 수동 삭제 후 `npm run build` 재실행:
+```bash
+rm -rf .next && npm run build
+```
+
+### 3. [권장 - P1] ESLint 설정 경로 수정
+
+`eslint.config.mjs` 에서 import 경로에 `.js` 확장자 추가:
+
+```js
+// 수정 전
+import config from "eslint-config-next/core-web-vitals"
+// 수정 후
+import config from "eslint-config-next/core-web-vitals.js"
+```
 
 ---
 
-## 참고: 검증 환경
+## 조치 순서
 
-- **플랫폼**: WSL2 (Linux on NTFS /mnt/d)
-- **Node**: npm run build 대신 `npx tsc --noEmit`으로 타입 검증
-- **판단 기준**: tsc 출력 없음 = 타입 오류 0개 = 배포 가능
+1. `src/lib/types.ts` → `AdminSubmission`에 `status` 필드 추가 (타입 오류 5건 해소)
+2. Windows에서 node 프로세스 종료 후 `.next` 폴더 삭제
+3. `npm run build` 재실행으로 빌드 성공 여부 확인
+4. 필요 시 `eslint.config.mjs` 경로 수정
+

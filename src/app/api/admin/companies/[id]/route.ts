@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
+import { sendEmail, companyApprovedEmail, companyRejectedEmail } from "@/lib/email";
 
 const ADMIN_SECRET = process.env.ADMIN_SECRET || "";
 
@@ -33,6 +34,13 @@ export async function PATCH(
       );
     }
 
+    // 이메일 발송을 위해 업체 정보 먼저 조회
+    const { data: company } = await supabaseAdmin
+      .from("companies")
+      .select("company_name, email")
+      .eq("id", id)
+      .single();
+
     const { error } = await supabaseAdmin
       .from("companies")
       .update({ status })
@@ -40,6 +48,27 @@ export async function PATCH(
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    // 이메일 알림 발송 (실패해도 승인 처리는 유지)
+    if (company?.email) {
+      try {
+        if (status === "approved") {
+          await sendEmail({
+            to: company.email,
+            subject: "[AI 인테리어] 업체 가입이 승인되었습니다",
+            html: companyApprovedEmail(company.company_name),
+          });
+        } else {
+          await sendEmail({
+            to: company.email,
+            subject: "[AI 인테리어] 업체 심사 결과 안내",
+            html: companyRejectedEmail(company.company_name),
+          });
+        }
+      } catch (emailErr) {
+        console.error("[admin/companies/id] 이메일 발송 실패:", emailErr);
+      }
     }
 
     return NextResponse.json({ success: true });

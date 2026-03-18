@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       password_hash: hash,
       salt,
       company_name,
-      status: "pending",
+      status: "approved",
     });
 
     if (error) {
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { message: "가입이 완료되었습니다. 관리자 승인 후 이용 가능합니다." },
+      { message: "가입이 완료되었습니다. 바로 로그인하여 이용할 수 있습니다." },
       { status: 201 }
     );
   } catch (err) {

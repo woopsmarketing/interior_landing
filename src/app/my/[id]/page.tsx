@@ -22,6 +22,7 @@ interface Submission {
   hasReferenceImage: boolean;
   hasGeneratedImage: boolean;
   name: string;
+  status: string;
 }
 
 interface CompanyResponseItem {
@@ -167,8 +168,8 @@ export default function MySubmissionPage() {
     );
   }
 
-  // 현재 상태 (MVP에서는 항상 1단계)
-  const currentStatus = 1;
+  const STATUS_MAP: Record<string, number> = { received: 1, matching: 2, quoted: 3 };
+  const currentStatus = STATUS_MAP[submission.status] ?? 1;
 
   return (
     <div className="min-h-screen bg-[#FFF9F5]">

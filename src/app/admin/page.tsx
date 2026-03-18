@@ -209,7 +209,15 @@ export default function AdminPage() {
             </button>
           </div>
         ) : selected ? (
-          <SubmissionDetail submission={selected} onBack={() => setSelectedId(null)} />
+          <SubmissionDetail
+            submission={selected}
+            onBack={() => setSelectedId(null)}
+            onStatusChange={(id, status) => {
+              setSubmissions((prev) =>
+                prev.map((s) => (s.id === id ? { ...s, status } : s))
+              );
+            }}
+          />
         ) : submissions.length === 0 ? (
           <div className="text-center py-20">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
@@ -259,9 +267,11 @@ export default function AdminPage() {
                       <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-600">사진</span>
                     )}
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                      s.constructionScope ? "bg-orange-50 text-orange-600" : "bg-gray-100 text-gray-400"
+                      s.status === "quoted" ? "bg-green-100 text-green-600" :
+                      s.status === "matching" ? "bg-blue-100 text-blue-600" :
+                      "bg-gray-100 text-gray-500"
                     }`}>
-                      {s.constructionScope || "미지정"}
+                      {s.status === "quoted" ? "견적도착" : s.status === "matching" ? "매칭중" : "접수"}
                     </span>
                     <svg className="h-4 w-4 text-gray-300" viewBox="0 0 16 16" fill="none">
                       <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
