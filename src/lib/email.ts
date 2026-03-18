@@ -1,5 +1,6 @@
-const RESEND_API_KEY = process.env.RESEND_API_KEY || "";
-const FROM_EMAIL = process.env.EMAIL_FROM || "noreply@yourdomain.com";
+const BREVO_API_KEY = process.env.BREVO_API_KEY || "";
+const FROM_EMAIL = process.env.EMAIL_FROM || "noreply@moaestimates.kr";
+const FROM_NAME = process.env.EMAIL_FROM_NAME || "모아견적";
 
 interface SendEmailOptions {
   to: string;
@@ -8,18 +9,23 @@ interface SendEmailOptions {
 }
 
 export async function sendEmail({ to, subject, html }: SendEmailOptions): Promise<void> {
-  if (!RESEND_API_KEY) {
-    console.warn("[email] RESEND_API_KEY 없음 — 이메일 발송 건너뜀");
+  if (!BREVO_API_KEY) {
+    console.warn("[email] BREVO_API_KEY 없음 — 이메일 발송 건너뜀");
     return;
   }
 
-  const res = await fetch("https://api.resend.com/emails", {
+  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${RESEND_API_KEY}`,
+      "api-key": BREVO_API_KEY,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ from: FROM_EMAIL, to, subject, html }),
+    body: JSON.stringify({
+      sender: { name: FROM_NAME, email: FROM_EMAIL },
+      to: [{ email: to }],
+      subject,
+      htmlContent: html,
+    }),
   });
 
   if (!res.ok) {
