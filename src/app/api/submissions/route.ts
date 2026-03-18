@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { saveSubmission, listSubmissions } from "@/lib/submissions";
+import { sendEmail, customerSubmissionConfirmEmail } from "@/lib/email";
 
 // GET /api/submissions — 전체 목록 조회
 export async function GET() {
@@ -60,6 +61,19 @@ export async function POST(request: NextRequest) {
       : null;
 
     const id = await saveSubmission(data, { spacePhoto, referenceImage, generatedImage });
+
+    // 고객에게 접수 확인 이메일 발송 (링크 포함)
+    if (data.email) {
+      try {
+        await sendEmail({
+          to: data.email,
+          subject: "[모아견적] 견적 요청이 접수되었습니다",
+          html: customerSubmissionConfirmEmail(data.name, id),
+        });
+      } catch (emailErr) {
+        console.error("[submissions] 접수 확인 이메일 발송 실패:", emailErr);
+      }
+    }
 
     return NextResponse.json({ id, success: true });
   } catch (err) {

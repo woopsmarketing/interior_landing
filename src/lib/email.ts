@@ -72,6 +72,32 @@ export function companyRejectedEmail(companyName: string): string {
 </div>`;
 }
 
+export function customerSubmissionConfirmEmail(customerName: string, submissionId: string): string {
+  const url = `${process.env.NEXT_PUBLIC_SITE_URL || ""}/my/${submissionId}`;
+  return `
+<div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;background:#fff;">
+  <div style="margin-bottom:24px;">
+    <span style="background:#f97316;color:#fff;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:700;">모아견적</span>
+  </div>
+  <h2 style="font-size:20px;font-weight:700;color:#111;margin:0 0 12px;">견적 요청이 접수되었습니다 ✅</h2>
+  <p style="font-size:15px;color:#444;line-height:1.6;margin:0 0 24px;">
+    안녕하세요, <strong>${customerName}</strong>님.<br/>
+    견적 요청이 정상적으로 접수되었습니다.<br/>
+    업체 매칭 후 견적이 도착하면 알림을 보내드릴게요.
+  </p>
+  <div style="background:#fff8f3;border:1px solid #fed7aa;border-radius:12px;padding:16px 20px;margin-bottom:24px;">
+    <p style="font-size:13px;color:#c2410c;font-weight:600;margin:0 0 8px;">📌 내 견적 확인 링크 (저장해두세요)</p>
+    <p style="font-size:12px;color:#78350f;margin:0 0 12px;word-break:break-all;">${url}</p>
+    <a href="${url}"
+       style="display:inline-block;background:#f97316;color:#fff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;">
+      내 견적 현황 보기
+    </a>
+  </div>
+  <p style="font-size:12px;color:#999;line-height:1.6;">이 링크를 북마크하거나 저장해두시면 언제든지 견적 진행 현황을 확인하실 수 있습니다.</p>
+  <p style="font-size:12px;color:#ccc;margin-top:24px;">이 메일은 자동 발송된 알림입니다.</p>
+</div>`;
+}
+
 export function customerQuoteArrivedEmail(customerName: string, companyName: string, submissionId: string): string {
   const url = `${process.env.NEXT_PUBLIC_SITE_URL || ""}/my/${submissionId}`;
   return `

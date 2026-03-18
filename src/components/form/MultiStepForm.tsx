@@ -631,16 +631,20 @@ export default function MultiStepForm() {
 
             {/* 내 견적 페이지 링크 */}
             {submissionId && (
-              <a
-                href={`/my/${submissionId}`}
-                className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-gray-200 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
-              >
-                <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                  <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                </svg>
-                내 견적 상태 확인하기
-              </a>
+              <div className="mt-4 rounded-xl bg-orange-50 border border-orange-200 p-4">
+                <p className="text-xs font-semibold text-orange-700 mb-1">📌 견적 현황 페이지 (이메일로도 발송됨)</p>
+                <p className="text-xs text-orange-500 mb-3 break-all">/my/{submissionId}</p>
+                <a
+                  href={`/my/${submissionId}`}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-orange-500 py-3 text-sm font-bold text-white hover:bg-orange-600 transition-colors"
+                >
+                  <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                    <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                  </svg>
+                  내 견적 현황 바로 보기
+                </a>
+              </div>
             )}
           </div>
         </div>
