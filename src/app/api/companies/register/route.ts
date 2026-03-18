@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { hashPassword } from "@/lib/company-auth";
 import { supabaseAdmin } from "@/lib/supabase";
+import { sendEmail, companyApprovedEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   try {
@@ -47,6 +48,17 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error("[companies/register] insert error:", error.message);
       return NextResponse.json({ error: "등록 실패" }, { status: 500 });
+    }
+
+    // 가입 완료 이메일 발송
+    try {
+      await sendEmail({
+        to: email,
+        subject: "[모아견적] 업체 가입이 완료되었습니다",
+        html: companyApprovedEmail(company_name),
+      });
+    } catch (emailErr) {
+      console.error("[companies/register] 이메일 발송 실패:", emailErr);
     }
 
     return NextResponse.json(
