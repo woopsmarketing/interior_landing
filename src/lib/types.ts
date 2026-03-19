@@ -55,14 +55,28 @@ export interface Portfolio {
 export interface CompanySubmission {
   id: string;
   created_at: string;
+  status: string;
   space_type: string;
   region: string;
   area: string;
+  area_unknown: boolean;
+  current_condition: string;
+  building_age: string;
   budget: string;
   construction_scope: string;
   desired_timing: string;
   construction_purpose: string;
+  schedule_flexibility: string;
+  occupancy_during_work: string;
+  renovation_areas: string[];
+  renovation_note: string;
   additional_request: string;
+  has_space_photo: boolean;
+  has_reference_image: boolean;
+  has_generated_image: boolean;
+  space_photo_url: string | null;
+  reference_image_url: string | null;
+  generated_image_url: string | null;
   hasResponded: boolean;
 }
 

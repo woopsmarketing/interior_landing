@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Portfolio } from "@/lib/types";
 
 export default function PortfolioTab() {
@@ -214,14 +215,16 @@ export default function PortfolioTab() {
           {portfolios.map((p) => (
             <div key={p.id} className="rounded-xl border border-gray-200 bg-white overflow-hidden">
               {p.image_urls && p.image_urls.length > 0 && (
-                <div className="relative aspect-video bg-gray-100">
-                  <Image src={p.image_urls[0]} alt={p.title} fill className="object-cover" />
-                  {p.image_urls.length > 1 && (
-                    <span className="absolute bottom-2 right-2 rounded-full bg-black/50 px-2 py-0.5 text-xs text-white">
-                      +{p.image_urls.length - 1}
-                    </span>
-                  )}
-                </div>
+                <Link href={`/company/portfolio/${p.id}`} className="block">
+                  <div className="relative aspect-video bg-gray-100">
+                    <Image src={p.image_urls[0]} alt={p.title} fill className="object-cover" />
+                    {p.image_urls.length > 1 && (
+                      <span className="absolute bottom-2 right-2 rounded-full bg-black/50 px-2 py-0.5 text-xs text-white">
+                        +{p.image_urls.length - 1}
+                      </span>
+                    )}
+                  </div>
+                </Link>
               )}
               <div className="p-4">
                 <h4 className="text-sm font-bold text-gray-800">{p.title}</h4>
@@ -231,6 +234,7 @@ export default function PortfolioTab() {
                   {p.area && <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">{p.area}</span>}
                 </div>
                 <div className="flex gap-2 mt-3">
+                  <Link href={`/company/portfolio/${p.id}`} className="text-xs text-blue-500 hover:underline">상세보기</Link>
                   <button onClick={() => openEdit(p)} className="text-xs text-orange-500 hover:underline">수정</button>
                   <button onClick={() => handleDelete(p.id)} className="text-xs text-red-400 hover:underline">삭제</button>
                 </div>

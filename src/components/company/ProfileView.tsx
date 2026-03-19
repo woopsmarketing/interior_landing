@@ -11,14 +11,24 @@ export default function ProfileView({ profile }: { profile: CompanyProfile }) {
   const val = (v: string | number | null | undefined) =>
     v !== null && v !== undefined && v !== "" ? <p className={valueCls}>{v}</p> : emptyText;
 
-  const chips = (arr: string[] | null | undefined, color: string) =>
-    arr && arr.length > 0 ? (
+  // JSONB 필드가 문자열로 올 경우 파싱
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const toArr = (v: any): string[] | null => {
+    if (!v) return null;
+    if (Array.isArray(v)) return v;
+    try { return JSON.parse(v); } catch { return null; }
+  };
+
+  const chips = (arr: string[] | string | null | undefined, color: string) => {
+    const parsed = toArr(arr);
+    return parsed && parsed.length > 0 ? (
       <div className="flex flex-wrap gap-1.5 mt-1">
-        {arr.map((s) => (
+        {parsed.map((s) => (
           <span key={s} className={`rounded-full px-2.5 py-1 text-xs font-medium ${color}`}>{s}</span>
         ))}
       </div>
     ) : emptyText;
+  };
 
   return (
     <div className="space-y-6">
@@ -104,16 +114,16 @@ export default function ProfileView({ profile }: { profile: CompanyProfile }) {
       </div>
 
       {/* 강점 */}
-      {profile.strengths && profile.strengths.length > 0 && (
+      {toArr(profile.strengths)?.length ? (
         <div className="rounded-xl border border-gray-200 bg-white p-6">
           <h3 className="text-sm font-bold text-gray-700 mb-3">강점</h3>
           <div className="flex flex-wrap gap-2">
-            {profile.strengths.map((s) => (
+            {toArr(profile.strengths)!.map((s) => (
               <span key={s} className="rounded-full bg-orange-50 px-3 py-1.5 text-xs font-medium text-orange-600">{s}</span>
             ))}
           </div>
         </div>
-      )}
+      ) : null}
 
       {/* 소개 영상 */}
       {profile.intro_video_url && (

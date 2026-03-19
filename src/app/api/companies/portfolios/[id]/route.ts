@@ -2,6 +2,40 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedCompany } from "@/lib/company-auth";
 import { supabaseAdmin } from "@/lib/supabase";
 
+// GET — 포트폴리오 단건 조회
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const company = await getAuthenticatedCompany();
+    if (!company) {
+      return NextResponse.json({ error: "인증 필요" }, { status: 401 });
+    }
+
+    const { data: portfolio, error } = await supabaseAdmin
+      .from("portfolios")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !portfolio) {
+      return NextResponse.json({ error: "포트폴리오를 찾을 수 없습니다" }, { status: 404 });
+    }
+
+    // 소유권 검증
+    if (portfolio.company_id !== company.id) {
+      return NextResponse.json({ error: "권한 없음" }, { status: 403 });
+    }
+
+    return NextResponse.json({ portfolio });
+  } catch (err) {
+    console.error("[companies/portfolios/id] GET error:", err);
+    return NextResponse.json({ error: "서버 오류" }, { status: 500 });
+  }
+}
+
 // PATCH — 포트폴리오 수정
 export async function PATCH(
   request: NextRequest,
