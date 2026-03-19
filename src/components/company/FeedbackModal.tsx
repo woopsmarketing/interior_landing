@@ -165,12 +165,11 @@ export default function FeedbackModal({ type, onClose }: FeedbackModalProps) {
               />
             </div>
 
-            {/* 이미지 첨부 (문의하기만) */}
-            {!isFeedback && (
-              <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-                  이미지 첨부 <span className="text-gray-300 font-normal">(선택, 최대 5장)</span>
-                </label>
+            {/* 이미지 첨부 */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                이미지 첨부 <span className="text-gray-300 font-normal">(선택, 최대 5장)</span>
+              </label>
                 <div className="flex flex-wrap gap-2">
                   {images.map((img, i) => (
                     <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden bg-gray-100 group">
@@ -198,8 +197,7 @@ export default function FeedbackModal({ type, onClose }: FeedbackModalProps) {
                     </button>
                   )}
                 </div>
-              </div>
-            )}
+            </div>
 
             {error && <p className="text-xs text-red-500 text-center">{error}</p>}
 

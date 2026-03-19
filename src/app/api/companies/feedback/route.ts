@@ -31,12 +31,12 @@ export async function POST(request: NextRequest) {
         const fileName = `feedback/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
         const { data } = await supabaseAdmin.storage
-          .from("uploads")
+          .from("company-assets")
           .upload(fileName, buffer, { contentType: value.type });
 
         if (data?.path) {
           const { data: urlData } = supabaseAdmin.storage
-            .from("uploads")
+            .from("company-assets")
             .getPublicUrl(data.path);
           imageUrls.push(urlData.publicUrl);
         }
