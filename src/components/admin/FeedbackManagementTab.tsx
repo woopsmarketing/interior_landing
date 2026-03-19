@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { formatDate } from "@/lib/utils";
+import ImageLightbox from "@/components/common/ImageLightbox";
 
 interface Feedback {
   id: string;
@@ -30,6 +31,7 @@ export default function FeedbackManagementTab() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [adminNote, setAdminNote] = useState("");
   const [saving, setSaving] = useState(false);
+  const [lightbox, setLightbox] = useState<{ images: { src: string; alt?: string }[]; index: number } | null>(null);
 
   const fetchFeedbacks = useCallback(async () => {
     setLoading(true);
@@ -140,10 +142,18 @@ export default function FeedbackManagementTab() {
               <p className="text-xs font-semibold text-gray-500 mb-2">첨부 이미지 ({selected.image_urls.length})</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {selected.image_urls.map((url, i) => (
-                  <a key={i} href={url} target="_blank" rel="noopener noreferrer">
+                  <div
+                    key={i}
+                    className="relative aspect-video rounded-lg overflow-hidden bg-gray-100 cursor-pointer group"
+                    onClick={() => setLightbox({
+                      images: selected.image_urls.map((u, j) => ({ src: u, alt: `첨부 ${j + 1}` })),
+                      index: i,
+                    })}
+                  >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={url} alt={`첨부 ${i + 1}`} className="w-full rounded-lg border border-gray-100 object-cover aspect-video hover:opacity-80 transition-opacity" />
-                  </a>
+                    <img src={url} alt={`첨부 ${i + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                  </div>
                 ))}
               </div>
             </div>
@@ -168,6 +178,14 @@ export default function FeedbackManagementTab() {
             </button>
           </div>
         </div>
+
+        {lightbox && (
+          <ImageLightbox
+            images={lightbox.images}
+            initialIndex={lightbox.index}
+            onClose={() => setLightbox(null)}
+          />
+        )}
       </div>
     );
   }
