@@ -7,6 +7,7 @@ import { formatDate } from "@/lib/utils";
 import LoginForm from "@/components/admin/LoginForm";
 import SubmissionDetail from "@/components/admin/SubmissionDetail";
 import CompanyManagementTab from "@/components/admin/CompanyManagementTab";
+import FeedbackManagementTab from "@/components/admin/FeedbackManagementTab";
 
 export default function AdminPage() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -15,7 +16,7 @@ export default function AdminPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"submissions" | "companies">("submissions");
+  const [activeTab, setActiveTab] = useState<"submissions" | "companies" | "feedbacks">("submissions");
 
   // 인증 상태 확인
   useEffect(() => {
@@ -190,12 +191,24 @@ export default function AdminPage() {
             >
               업체 관리
             </button>
+            <button
+              onClick={() => { setActiveTab("feedbacks"); setSelectedId(null); }}
+              className={`py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === "feedbacks"
+                  ? "border-orange-500 text-orange-600"
+                  : "border-transparent text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              피드백/문의
+            </button>
           </nav>
         </div>
       </div>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        {activeTab === "companies" ? (
+        {activeTab === "feedbacks" ? (
+          <FeedbackManagementTab />
+        ) : activeTab === "companies" ? (
           <CompanyManagementTab />
         ) : loading ? (
           <div className="flex items-center justify-center py-20">

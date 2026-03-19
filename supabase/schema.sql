@@ -162,7 +162,27 @@ CREATE TABLE IF NOT EXISTS company_responses (
 
 ALTER TABLE company_responses DISABLE ROW LEVEL SECURITY;
 
--- ── 7. 업체 에셋 Storage 버킷 ─────────────────────────────
+-- ── 7. 피드백/문의 테이블 ─────────────────────────────────
+CREATE TABLE IF NOT EXISTS feedbacks (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  company_id TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+  company_name TEXT NOT NULL DEFAULT '',
+  company_email TEXT NOT NULL DEFAULT '',
+  type TEXT NOT NULL CHECK (type IN ('feedback', 'inquiry')),
+  category TEXT DEFAULT '',
+  content TEXT NOT NULL DEFAULT '',
+  image_urls JSONB DEFAULT '[]',
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'read', 'resolved')),
+  admin_note TEXT DEFAULT '',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE feedbacks DISABLE ROW LEVEL SECURITY;
+
+CREATE INDEX IF NOT EXISTS idx_feedbacks_type ON feedbacks(type);
+CREATE INDEX IF NOT EXISTS idx_feedbacks_created_at ON feedbacks(created_at DESC);
+
+-- ── 8. 업체 에셋 Storage 버킷 ─────────────────────────────
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('company-assets', 'company-assets', true)
 ON CONFLICT (id) DO NOTHING;
