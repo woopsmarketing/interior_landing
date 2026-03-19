@@ -1,22 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { supabaseAdmin } from "@/lib/supabase";
 
-const ADMIN_SECRET = process.env.ADMIN_SECRET || "admin1234";
+const ADMIN_SECRET = process.env.ADMIN_SECRET || "";
 
-async function isAdmin() {
-  const cookieStore = await cookies();
-  return cookieStore.get("admin_token")?.value === ADMIN_SECRET;
+function verifyAdminToken(token: string): boolean {
+  try {
+    const decoded = Buffer.from(token, "base64").toString("utf-8");
+    return decoded.startsWith(`${ADMIN_SECRET}:`);
+  } catch {
+    return false;
+  }
 }
 
 // GET — 피드백/문의 목록 조회
 export async function GET(request: NextRequest) {
-  if (!(await isAdmin())) {
+  const token = request.cookies.get("admin_token")?.value;
+  if (!token || !verifyAdminToken(token)) {
     return NextResponse.json({ error: "인증 필요" }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
-  const type = searchParams.get("type"); // "feedback" | "inquiry" | null (all)
+  const type = searchParams.get("type");
 
   let query = supabaseAdmin
     .from("feedbacks")
@@ -38,7 +42,8 @@ export async function GET(request: NextRequest) {
 
 // PATCH — 상태 변경 / 메모 추가
 export async function PATCH(request: NextRequest) {
-  if (!(await isAdmin())) {
+  const token = request.cookies.get("admin_token")?.value;
+  if (!token || !verifyAdminToken(token)) {
     return NextResponse.json({ error: "인증 필요" }, { status: 401 });
   }
 
