@@ -34,7 +34,6 @@ const PRESET_ALL = [...RESIDENTIAL_TYPES, ...COMMERCIAL_TYPES].filter(
   (t) => t !== "기타(직접입력)"
 );
 
-const REGIONS = ["서울", "경기", "인천", "부산", "대구", "광주", "대전", "기타"];
 const CONDITIONS = ["공실", "거주 중", "운영 중", "입주 전"];
 const BUILDING_AGES = ["신축", "부분 노후", "전체 노후", "잘 모르겠음"];
 
@@ -169,16 +168,14 @@ export default function Step1({ formData, onChange }: Step1Props) {
         <label className="block text-sm font-medium text-gray-700 mb-1.5">
           지역 <span className="text-orange-500">*</span>
         </label>
-        <select
+        <input
+          type="text"
           value={formData.region}
           onChange={(e) => onChange("region", e.target.value)}
-          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 transition-colors bg-white"
-        >
-          <option value="">지역을 선택해주세요</option>
-          {REGIONS.map((r) => (
-            <option key={r} value={r}>{r}</option>
-          ))}
-        </select>
+          placeholder="예: 서울 강남구, 경기 수원시, 부산 해운대구"
+          className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 transition-colors"
+        />
+        <p className="mt-1.5 text-xs text-gray-400">시/도 + 구/군까지 적어주시면 더 정확한 매칭이 가능해요</p>
       </div>
 
       {/* 면적 */}
@@ -213,6 +210,45 @@ export default function Step1({ formData, onChange }: Step1Props) {
           <span className="text-sm text-gray-500">잘 모르겠음</span>
         </label>
       </div>
+
+      {/* 건물명/상호명 — 공간 유형에 따라 동적 라벨 */}
+      {formData.spaceType && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            {(() => {
+              const t = formData.spaceType;
+              if (t === "아파트") return "아파트명";
+              if (t === "오피스텔") return "오피스텔명";
+              if (t.includes("주택")) return "건물명/단지명";
+              if (t.includes("빌라") || t === "타운하우스") return "건물명";
+              if (category === "상업용") return "상호명";
+              return "건물명";
+            })()}{" "}
+            <span className="text-xs text-gray-400">(선택)</span>
+          </label>
+          <input
+            type="text"
+            value={formData.buildingName as string}
+            onChange={(e) => onChange("buildingName", e.target.value)}
+            placeholder={(() => {
+              const t = formData.spaceType;
+              if (t === "아파트") return "예: 래미안 아파트, 자이 아파트";
+              if (t === "오피스텔") return "예: 센트럴 오피스텔";
+              if (t.includes("주택")) return "예: ○○마을, 단지명";
+              if (t.includes("빌라") || t === "타운하우스") return "예: ○○빌라, ○○타운";
+              if (["카페", "음식점", "술집/바"].includes(t)) return "예: 카페 ○○, ○○식당";
+              if (t === "사무실") return "예: ○○빌딩, ○○타워";
+              if (t === "병원/의원") return "예: ○○의원, ○○치과";
+              if (t === "미용실/네일샵") return "예: ○○헤어, ○○네일";
+              if (t === "헬스장/스튜디오") return "예: ○○피트니스, ○○스튜디오";
+              if (t === "상가/매장") return "예: ○○상가, ○○몰";
+              if (category === "상업용") return "예: 상호명을 적어주세요";
+              return "예: 건물명을 적어주세요";
+            })()}
+            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 transition-colors"
+          />
+        </div>
+      )}
 
       {/* 추가 공간 정보 */}
       <button

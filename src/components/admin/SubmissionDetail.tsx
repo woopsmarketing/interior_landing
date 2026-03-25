@@ -191,7 +191,8 @@ export default function SubmissionDetail({
             공간 기본 정보
           </h3>
           <InfoRow label={L.spaceType} value={submission.spaceType} />
-          <InfoRow label={L.region} value={submission.region} />
+          <InfoRow label={L.region} value={submission.regionDetail ? `${submission.region} — ${submission.regionDetail}` : submission.region} />
+          <InfoRow label={L.buildingName} value={submission.buildingName} />
           <InfoRow label={L.area} value={submission.areaUnknown ? "잘 모르겠음" : submission.area ? `${submission.area}평` : ""} />
           <InfoRow label={L.currentCondition} value={submission.currentCondition} />
           <InfoRow label={L.buildingAge} value={submission.buildingAge} />
@@ -211,12 +212,10 @@ export default function SubmissionDetail({
         <div className="rounded-xl border border-gray-200 p-5">
           <h3 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-orange-100 text-xs font-bold text-orange-600">3</span>
-            취향 및 우선순위
+            인테리어 공간
           </h3>
-          <InfoRow label={L.priorities} value={submission.priorities} />
-          <InfoRow label={L.preferredStyles} value={submission.preferredStyles} />
-          <InfoRow label={L.preferredAtmosphere} value={submission.preferredAtmosphere} />
-          <InfoRow label={L.currentProblems} value={submission.currentProblems} />
+          <InfoRow label={L.renovationAreas} value={submission.renovationAreas} />
+          <InfoRow label={L.renovationNote} value={submission.renovationNote} />
         </div>
         {submission.additionalRequest && (
           <div className="rounded-xl border border-gray-200 p-5 lg:col-span-2">

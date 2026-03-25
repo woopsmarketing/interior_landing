@@ -22,6 +22,8 @@ export async function POST(request: NextRequest) {
     const data = {
       spaceType: (formData.get("spaceType") as string) || "",
       region: (formData.get("region") as string) || "",
+      regionDetail: (formData.get("regionDetail") as string) || "",
+      buildingName: (formData.get("buildingName") as string) || "",
       area: (formData.get("area") as string) || "",
       areaUnknown: formData.get("areaUnknown") === "true",
       currentCondition: (formData.get("currentCondition") as string) || "",

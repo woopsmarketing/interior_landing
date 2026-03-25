@@ -13,6 +13,8 @@ export interface FormData {
   // Step 1 - 공간 기본 정보
   spaceType: string;
   region: string;
+  regionDetail: string;
+  buildingName: string;
   area: string;
   areaUnknown: boolean;
   currentCondition: string;
@@ -45,6 +47,8 @@ export interface FormData {
 const INITIAL_FORM_DATA: FormData = {
   spaceType: "",
   region: "",
+  regionDetail: "",
+  buildingName: "",
   area: "",
   areaUnknown: false,
   currentCondition: "",
@@ -235,6 +239,8 @@ export default function MultiStepForm() {
         // 모든 폼 필드 전송
         body.append("spaceType", formData.spaceType);
         body.append("region", formData.region);
+        body.append("regionDetail", formData.regionDetail);
+        body.append("buildingName", formData.buildingName);
         body.append("area", formData.area);
         body.append("areaUnknown", String(formData.areaUnknown));
         body.append("currentCondition", formData.currentCondition);

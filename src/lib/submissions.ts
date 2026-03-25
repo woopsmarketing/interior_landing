@@ -8,6 +8,8 @@ export interface SubmissionData {
   // Step 1
   spaceType: string;
   region: string;
+  regionDetail: string;
+  buildingName: string;
   area: string;
   areaUnknown: boolean;
   currentCondition: string;
@@ -52,6 +54,8 @@ function fromRow(row: any): SubmissionData {
     status: row.status ?? "received",
     spaceType: row.space_type ?? "",
     region: row.region ?? "",
+    regionDetail: row.region_detail ?? "",
+    buildingName: row.building_name ?? "",
     area: row.area ?? "",
     areaUnknown: row.area_unknown ?? false,
     currentCondition: row.current_condition ?? "",
@@ -149,6 +153,8 @@ export async function saveSubmission(
     status: "received",
     space_type: data.spaceType,
     region: data.region,
+    region_detail: data.regionDetail,
+    building_name: data.buildingName,
     area: data.area,
     area_unknown: data.areaUnknown,
     current_condition: data.currentCondition,

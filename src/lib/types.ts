@@ -58,6 +58,8 @@ export interface CompanySubmission {
   status: string;
   space_type: string;
   region: string;
+  region_detail: string;
+  building_name: string;
   area: string;
   area_unknown: boolean;
   current_condition: string;
@@ -104,6 +106,8 @@ export interface AdminSubmission {
   createdAt: string;
   spaceType: string;
   region: string;
+  regionDetail: string;
+  buildingName: string;
   area: string;
   areaUnknown: boolean;
   currentCondition: string;
@@ -114,10 +118,8 @@ export interface AdminSubmission {
   constructionPurpose: string;
   scheduleFlexibility: string;
   occupancyDuringWork: string;
-  priorities: string[];
-  preferredStyles: string[];
-  preferredAtmosphere: string;
-  currentProblems: string[];
+  renovationAreas: string[];
+  renovationNote: string;
   additionalRequest: string;
   hasSpacePhoto: boolean;
   hasReferenceImage: boolean;
