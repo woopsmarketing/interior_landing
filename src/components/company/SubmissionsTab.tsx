@@ -105,9 +105,9 @@ export default function SubmissionsTab() {
                       </span>
                     )}
                   </div>
-                  <div className="flex flex-wrap gap-2 text-xs">
+                  <div className="flex flex-wrap gap-1.5 text-xs">
                     {s.space_type && (
-                      <span className="rounded-full bg-blue-50 px-2.5 py-1 text-blue-600">
+                      <span className="rounded-full bg-blue-50 px-2.5 py-1 font-medium text-blue-600">
                         {s.space_type}
                       </span>
                     )}
@@ -116,9 +116,14 @@ export default function SubmissionsTab() {
                         {s.region}
                       </span>
                     )}
+                    {s.building_name && (
+                      <span className="rounded-full bg-gray-100 px-2.5 py-1 text-gray-600">
+                        {s.building_name}
+                      </span>
+                    )}
                     {s.area_unknown ? (
                       <span className="rounded-full bg-gray-100 px-2.5 py-1 text-gray-400">
-                        면적 모름
+                        면적 미정
                       </span>
                     ) : s.area ? (
                       <span className="rounded-full bg-gray-100 px-2.5 py-1 text-gray-600">
@@ -126,7 +131,7 @@ export default function SubmissionsTab() {
                       </span>
                     ) : null}
                     {s.budget && (
-                      <span className="rounded-full bg-orange-50 px-2.5 py-1 text-orange-600">
+                      <span className="rounded-full bg-orange-50 px-2.5 py-1 font-medium text-orange-600">
                         {s.budget}
                       </span>
                     )}
@@ -138,6 +143,11 @@ export default function SubmissionsTab() {
                     {s.desired_timing && (
                       <span className="rounded-full bg-green-50 px-2.5 py-1 text-green-600">
                         {s.desired_timing}
+                      </span>
+                    )}
+                    {s.structural_change && s.structural_change !== "없음" && (
+                      <span className="rounded-full bg-red-50 px-2.5 py-1 font-medium text-red-500">
+                        구조변경 {s.structural_change}
                       </span>
                     )}
                   </div>
@@ -199,7 +209,8 @@ export default function SubmissionsTab() {
                     </p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3">
                       <DetailField label="공간 유형" value={s.space_type} />
-                      <DetailField label="지역" value={s.region} />
+                      <DetailField label="지역" value={s.region_detail ? `${s.region} (${s.region_detail})` : s.region} />
+                      <DetailField label="건물명" value={s.building_name} />
                       <DetailField
                         label="면적"
                         value={

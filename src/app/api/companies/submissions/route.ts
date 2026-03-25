@@ -18,7 +18,7 @@ export async function GET() {
     const { data: submissions, error } = await supabaseAdmin
       .from("submissions")
       .select(
-        "id, created_at, status, space_type, region, area, area_unknown, current_condition, building_age, construction_scope, desired_timing, budget, construction_purpose, schedule_flexibility, occupancy_during_work, renovation_areas, renovation_note, additional_request, has_space_photo, has_reference_image, has_generated_image, space_photo_url, reference_image_url, generated_image_url"
+        "id, created_at, status, space_type, region, region_detail, building_name, area, area_unknown, current_condition, building_age, construction_scope, desired_timing, budget, structural_change, renovation_areas, renovation_note, additional_request, has_space_photo, has_reference_image, has_generated_image, space_photo_url, reference_image_url, generated_image_url"
       )
       .order("created_at", { ascending: false });
 
