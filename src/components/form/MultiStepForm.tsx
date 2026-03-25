@@ -23,9 +23,7 @@ export interface FormData {
   constructionScope: string;
   desiredTiming: string;
   budget: string;
-  constructionPurpose: string;
-  scheduleFlexibility: string;
-  occupancyDuringWork: string;
+  structuralChange: string;
   // Step 3 - 인테리어 할 공간
   renovationAreas: string[];
   renovationNote: string;
@@ -56,9 +54,7 @@ const INITIAL_FORM_DATA: FormData = {
   constructionScope: "",
   desiredTiming: "",
   budget: "",
-  constructionPurpose: "",
-  scheduleFlexibility: "",
-  occupancyDuringWork: "",
+  structuralChange: "",
   renovationAreas: [],
   renovationNote: "",
   spacePhoto: null,
@@ -248,9 +244,7 @@ export default function MultiStepForm() {
         body.append("constructionScope", formData.constructionScope);
         body.append("desiredTiming", formData.desiredTiming);
         body.append("budget", formData.budget);
-        body.append("constructionPurpose", formData.constructionPurpose);
-        body.append("scheduleFlexibility", formData.scheduleFlexibility);
-        body.append("occupancyDuringWork", formData.occupancyDuringWork);
+        body.append("structuralChange", formData.structuralChange);
         body.append("renovationAreas", JSON.stringify(formData.renovationAreas));
         body.append("renovationNote", formData.renovationNote);
         body.append("additionalRequest", formData.additionalRequest);

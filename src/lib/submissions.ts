@@ -18,9 +18,7 @@ export interface SubmissionData {
   constructionScope: string;
   desiredTiming: string;
   budget: string;
-  constructionPurpose: string;
-  scheduleFlexibility: string;
-  occupancyDuringWork: string;
+  structuralChange: string;
   // Step 3
   renovationAreas: string[];
   renovationNote: string;
@@ -63,9 +61,7 @@ function fromRow(row: any): SubmissionData {
     constructionScope: row.construction_scope ?? "",
     desiredTiming: row.desired_timing ?? "",
     budget: row.budget ?? "",
-    constructionPurpose: row.construction_purpose ?? "",
-    scheduleFlexibility: row.schedule_flexibility ?? "",
-    occupancyDuringWork: row.occupancy_during_work ?? "",
+    structuralChange: row.structural_change ?? "",
     renovationAreas: row.renovation_areas ?? [],
     renovationNote: row.renovation_note ?? "",
     additionalRequest: row.additional_request ?? "",
@@ -162,9 +158,7 @@ export async function saveSubmission(
     construction_scope: data.constructionScope,
     desired_timing: data.desiredTiming,
     budget: data.budget,
-    construction_purpose: data.constructionPurpose,
-    schedule_flexibility: data.scheduleFlexibility,
-    occupancy_during_work: data.occupancyDuringWork,
+    structural_change: data.structuralChange,
     renovation_areas: data.renovationAreas,
     renovation_note: data.renovationNote,
     additional_request: data.additionalRequest,

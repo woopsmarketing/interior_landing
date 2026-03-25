@@ -205,9 +205,7 @@ export default function SubmissionDetail({
           <InfoRow label={L.constructionScope} value={submission.constructionScope} />
           <InfoRow label={L.desiredTiming} value={submission.desiredTiming} />
           <InfoRow label={L.budget} value={submission.budget} />
-          <InfoRow label={L.constructionPurpose} value={submission.constructionPurpose} />
-          <InfoRow label={L.scheduleFlexibility} value={submission.scheduleFlexibility} />
-          <InfoRow label={L.occupancyDuringWork} value={submission.occupancyDuringWork} />
+          <InfoRow label={L.structuralChange} value={submission.structuralChange} />
         </div>
         <div className="rounded-xl border border-gray-200 p-5">
           <h3 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">

@@ -234,16 +234,8 @@ export default function SubmissionsTab() {
                       />
                       <DetailField label="예산" value={s.budget} />
                       <DetailField
-                        label="시공 목적"
-                        value={s.construction_purpose}
-                      />
-                      <DetailField
-                        label="일정 유연성"
-                        value={s.schedule_flexibility}
-                      />
-                      <DetailField
-                        label="거주 여부"
-                        value={s.occupancy_during_work}
+                        label="구조 변경"
+                        value={s.structural_change}
                       />
                     </div>
                   </div>

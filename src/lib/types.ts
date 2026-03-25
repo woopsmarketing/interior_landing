@@ -67,9 +67,7 @@ export interface CompanySubmission {
   budget: string;
   construction_scope: string;
   desired_timing: string;
-  construction_purpose: string;
-  schedule_flexibility: string;
-  occupancy_during_work: string;
+  structural_change: string;
   renovation_areas: string[];
   renovation_note: string;
   additional_request: string;
@@ -115,9 +113,7 @@ export interface AdminSubmission {
   constructionScope: string;
   desiredTiming: string;
   budget: string;
-  constructionPurpose: string;
-  scheduleFlexibility: string;
-  occupancyDuringWork: string;
+  structuralChange: string;
   renovationAreas: string[];
   renovationNote: string;
   additionalRequest: string;

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { FormData } from "../MultiStepForm";
 
 interface Step2Props {
@@ -35,23 +34,13 @@ const BUDGETS = [
   "미정 / 상담 후 결정",
 ];
 
-const PURPOSES = [
-  "첫 입주",
-  "이사 전 리모델링",
-  "노후 개선",
-  "매장 오픈",
-  "브랜드 리뉴얼",
-  "임대용 세팅",
-  "기타",
+const STRUCTURAL_CHANGES = [
+  { value: "있음", label: "있음 (벽 철거/확장 등)", desc: "벽을 허물거나 공간을 합치는 공사" },
+  { value: "없음", label: "없음", desc: "기존 구조 유지, 마감재 교체 위주" },
+  { value: "모르겠음", label: "잘 모르겠음", desc: "상담 시 결정할게요" },
 ];
 
-const FLEXIBILITIES = ["날짜 고정", "1주 조정 가능", "2주 이상 조정 가능"];
-
-const OCCUPANCIES = ["비워둘 예정", "일부 거주", "일부 운영", "완전 비우기 어려움"];
-
 export default function Step2({ formData, onChange }: Step2Props) {
-  const [showExtra, setShowExtra] = useState(false);
-
   return (
     <div className="space-y-5">
       {/* 공사 범위 */}
@@ -95,9 +84,7 @@ export default function Step2({ formData, onChange }: Step2Props) {
         >
           <option value="">희망 시기를 선택해주세요</option>
           {DESIRED_TIMINGS.map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
+            <option key={t} value={t}>{t}</option>
           ))}
         </select>
       </div>
@@ -114,125 +101,46 @@ export default function Step2({ formData, onChange }: Step2Props) {
         >
           <option value="">예산 범위를 선택해주세요</option>
           {BUDGETS.map((b) => (
-            <option key={b} value={b}>
-              {b}
-            </option>
+            <option key={b} value={b}>{b}</option>
           ))}
         </select>
       </div>
 
-      {/* 세부 일정 펼치기 */}
-      <button
-        type="button"
-        onClick={() => setShowExtra(!showExtra)}
-        className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-orange-500 transition-colors"
-      >
-        <svg
-          className={`h-4 w-4 transition-transform ${showExtra ? "rotate-90" : ""}`}
-          viewBox="0 0 16 16"
-          fill="none"
-        >
-          <path
-            d="M6 3L11 8L6 13"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        세부 일정 입력하기 <span className="text-xs text-gray-300">(선택)</span>
-      </button>
-
-      {showExtra && (
-        <div className="space-y-4 rounded-xl border border-gray-100 bg-gray-50/60 px-4 py-4">
-          {/* 공사 목적 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-2">
-              공사 목적
+      {/* 구조 변경 여부 */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          구조 변경 (벽 철거/확장) <span className="text-xs text-gray-400">(선택)</span>
+        </label>
+        <div className="space-y-2">
+          {STRUCTURAL_CHANGES.map((opt) => (
+            <label
+              key={opt.value}
+              className={`flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 transition-all ${
+                formData.structuralChange === opt.value
+                  ? "border-orange-400 bg-orange-50"
+                  : "border-gray-200 bg-white hover:border-orange-200 hover:bg-orange-50/50"
+              }`}
+            >
+              <input
+                type="radio"
+                name="structuralChange"
+                value={opt.value}
+                checked={formData.structuralChange === opt.value}
+                onChange={(e) => onChange("structuralChange", e.target.value)}
+                className="sr-only"
+              />
+              <div>
+                <span className={`text-sm font-medium ${
+                  formData.structuralChange === opt.value ? "text-orange-600" : "text-gray-700"
+                }`}>
+                  {opt.label}
+                </span>
+                <p className="text-xs text-gray-400 mt-0.5">{opt.desc}</p>
+              </div>
             </label>
-            <div className="flex flex-wrap gap-2">
-              {PURPOSES.map((p) => (
-                <label
-                  key={p}
-                  className={`flex cursor-pointer items-center rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all ${
-                    formData.constructionPurpose === p
-                      ? "border-orange-400 bg-orange-50 text-orange-600"
-                      : "border-gray-200 bg-white text-gray-600 hover:border-orange-200"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="constructionPurpose"
-                    value={p}
-                    checked={formData.constructionPurpose === p}
-                    onChange={(e) => onChange("constructionPurpose", e.target.value)}
-                    className="sr-only"
-                  />
-                  {p}
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* 일정 유연성 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-2">
-              일정 유연성
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {FLEXIBILITIES.map((f) => (
-                <label
-                  key={f}
-                  className={`flex cursor-pointer items-center rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all ${
-                    formData.scheduleFlexibility === f
-                      ? "border-orange-400 bg-orange-50 text-orange-600"
-                      : "border-gray-200 bg-white text-gray-600 hover:border-orange-200"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="scheduleFlexibility"
-                    value={f}
-                    checked={formData.scheduleFlexibility === f}
-                    onChange={(e) => onChange("scheduleFlexibility", e.target.value)}
-                    className="sr-only"
-                  />
-                  {f}
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* 공사 중 사용 여부 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-2">
-              공사 중 사용 여부
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {OCCUPANCIES.map((o) => (
-                <label
-                  key={o}
-                  className={`flex cursor-pointer items-center rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all ${
-                    formData.occupancyDuringWork === o
-                      ? "border-orange-400 bg-orange-50 text-orange-600"
-                      : "border-gray-200 bg-white text-gray-600 hover:border-orange-200"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="occupancyDuringWork"
-                    value={o}
-                    checked={formData.occupancyDuringWork === o}
-                    onChange={(e) => onChange("occupancyDuringWork", e.target.value)}
-                    className="sr-only"
-                  />
-                  {o}
-                </label>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
 }
