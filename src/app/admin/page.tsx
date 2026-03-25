@@ -248,8 +248,9 @@ export default function AdminPage() {
                 onClick={() => setSelectedId(s.id)}
                 className="w-full text-left rounded-xl bg-white border border-gray-200 p-5 hover:border-orange-200 hover:shadow-sm transition-all"
               >
+                {/* 상단: 이름/연락처 + 상태 배지 */}
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-50 text-sm font-bold text-orange-500">
                       {s.name.charAt(0)}
                     </div>
@@ -258,28 +259,19 @@ export default function AdminPage() {
                         <span className="text-sm font-semibold text-gray-900">{s.name}</span>
                         <span className="text-xs text-gray-400">{s.phone}</span>
                       </div>
-                      <div className="mt-0.5 flex items-center gap-2 text-xs text-gray-400">
-                        <span>{formatDate(s.createdAt, true)}</span>
-                        <span>·</span>
-                        <span>{s.spaceType} {s.region}</span>
-                        {s.budget && (
-                          <>
-                            <span>·</span>
-                            <span>{s.budget}</span>
-                          </>
-                        )}
-                      </div>
+                      <p className="mt-0.5 text-xs text-gray-400">
+                        {formatDate(s.createdAt, true)}
+                      </p>
                     </div>
                   </div>
-
                   <div className="flex items-center gap-2">
-                    {s.hasGeneratedImage && (
-                      <span className="rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-600">AI</span>
-                    )}
                     {s.hasSpacePhoto && (
                       <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-600">사진</span>
                     )}
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                    {s.hasGeneratedImage && (
+                      <span className="rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-600">AI</span>
+                    )}
+                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
                       s.status === "quoted" ? "bg-green-100 text-green-600" :
                       s.status === "matching" ? "bg-blue-100 text-blue-600" :
                       "bg-gray-100 text-gray-500"
@@ -290,6 +282,29 @@ export default function AdminPage() {
                       <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
+                </div>
+
+                {/* 핵심 정보 요약 */}
+                <div className="mt-3 ml-[52px] flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                  <span className="font-medium text-gray-700">{s.spaceType}</span>
+                  <span className="text-gray-300">|</span>
+                  <span className="text-gray-600">{s.region}{s.buildingName ? ` · ${s.buildingName}` : ""}</span>
+                  <span className="text-gray-300">|</span>
+                  <span className="text-gray-600">{s.areaUnknown ? "면적 미정" : s.area ? `${s.area}평` : ""}</span>
+                </div>
+                <div className="mt-1.5 ml-[52px] flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                  {s.constructionScope && (
+                    <span className="rounded-full bg-orange-50 px-2 py-0.5 text-orange-600 font-medium">{s.constructionScope}</span>
+                  )}
+                  {s.budget && (
+                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-gray-600">{s.budget}</span>
+                  )}
+                  {s.structuralChange && s.structuralChange !== "없음" && (
+                    <span className="rounded-full bg-red-50 px-2 py-0.5 text-red-500 font-medium">구조변경 {s.structuralChange}</span>
+                  )}
+                  {s.renovationAreas && s.renovationAreas.length > 0 && (
+                    <span className="text-gray-400">{s.renovationAreas.join(", ")}</span>
+                  )}
                 </div>
               </button>
             ))}
