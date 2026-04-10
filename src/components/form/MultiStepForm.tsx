@@ -659,11 +659,42 @@ export default function MultiStepForm() {
       <div className="rounded-2xl bg-white shadow-lg shadow-gray-100/60 border border-gray-100 overflow-hidden">
         {/* Progress Header */}
         <div className="px-6 pt-6 pb-4 sm:px-8 sm:pt-7">
-          {/* 안내 문구 */}
-          <p className="mb-4 text-xs text-gray-400 leading-relaxed text-center bg-gray-50 rounded-lg px-3 py-2">
-            필수 항목만 입력하셔도 상담 신청이 가능합니다.
-            추가 정보를 작성해주실수록 더 정확한 견적과 완성된 인테리어 미리보기를 받을 수 있습니다.
-          </p>
+          {/* 안내 문구 — Step 1에서만 서비스 요약 표시 */}
+          {currentStep === 1 ? (
+            <div className="mb-5 rounded-xl border border-orange-100 bg-gradient-to-br from-orange-50 to-amber-50/60 px-4 py-4">
+              <div className="flex items-start gap-3">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-100 text-lg">
+                  <svg className="h-5 w-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
+                  </svg>
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-gray-800">
+                    AI가 완성된 인테리어 결과물을 <span className="text-orange-600">무료</span>로 미리 보여드립니다
+                  </p>
+                  <p className="mt-1 text-xs leading-relaxed text-gray-500">
+                    간단한 정보만 입력하면 비교견적 + AI 인테리어 미리보기를 한 번에 받을 수 있어요
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-3 flex gap-2">
+                <span className="inline-flex items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-gray-600 ring-1 ring-gray-200/60">
+                  <svg className="h-3 w-3 text-orange-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                  검증된 업체 3곳+ 비교
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-gray-600 ring-1 ring-gray-200/60">
+                  <svg className="h-3 w-3 text-orange-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                  완전 무료
+                </span>
+              </div>
+            </div>
+          ) : (
+            <p className="mb-4 text-xs text-gray-400 leading-relaxed text-center bg-gray-50 rounded-lg px-3 py-2">
+              필수 항목만 입력하셔도 상담 신청이 가능합니다.
+              추가 정보를 작성해주실수록 더 정확한 견적과 완성된 인테리어 미리보기를 받을 수 있습니다.
+            </p>
+          )}
 
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-orange-500 uppercase tracking-wider">

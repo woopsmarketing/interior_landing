@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "견적 요청하기 | 인테리어 견적 비교",
@@ -7,6 +8,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 import MultiStepForm from "@/components/form/MultiStepForm";
+import AdLandingBanner from "@/components/form/AdLandingBanner";
 
 export default function FormPage() {
   return (
@@ -25,6 +27,11 @@ export default function FormPage() {
           </Link>
         </div>
       </header>
+
+      {/* 광고 유입 시 서비스 요약 배너 */}
+      <Suspense fallback={null}>
+        <AdLandingBanner />
+      </Suspense>
 
       {/* 폼 영역 */}
       <div className="flex min-h-[calc(100vh-65px)] flex-col items-center justify-center px-5 py-12 sm:px-8">

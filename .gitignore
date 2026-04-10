@@ -40,3 +40,8 @@ marketing/assets/
 # Submission data (admin)
 data/
 .next_dev
+
+# Temporary / local
+.omc/
+tmp/
+adimage/
