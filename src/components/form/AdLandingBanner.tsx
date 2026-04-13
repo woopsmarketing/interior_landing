@@ -1,17 +1,7 @@
-"use client";
-
-import { useSearchParams } from "next/navigation";
-
 export default function AdLandingBanner() {
-  const searchParams = useSearchParams();
-  const utmSource = searchParams.get("utm_source");
-
-  // 광고 유입(utm_source가 있을 때)만 배너 표시
-  if (!utmSource) return null;
-
   return (
     <div className="w-full bg-gradient-to-b from-[#1A1A2E] to-[#2D2D44] text-white">
-      <div className="mx-auto max-w-lg px-5 py-6">
+      <div className="mx-auto max-w-lg px-5 pt-6 pb-5 sm:pb-6">
         {/* 핵심 가치 */}
         <h2 className="text-center text-lg font-bold leading-snug sm:text-xl">
           같은 인테리어, 업체마다

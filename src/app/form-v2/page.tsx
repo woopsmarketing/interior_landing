@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
 import MultiStepFormV2 from "@/components/form/MultiStepFormV2";
 import AdLandingBanner from "@/components/form/AdLandingBanner";
 
@@ -28,13 +27,11 @@ export default function FormV2Page() {
         </div>
       </header>
 
-      {/* 광고 유입 시 서비스 요약 배너 */}
-      <Suspense fallback={null}>
-        <AdLandingBanner />
-      </Suspense>
+      {/* 서비스 요약 배너 */}
+      <AdLandingBanner />
 
-      {/* 폼 영역 — 모바일에서 상단 여백 축소 */}
-      <div className="flex min-h-[calc(100vh-65px)] flex-col items-center justify-center px-5 py-6 sm:py-12 sm:px-8">
+      {/* 폼 영역 — 배너 바로 아래에 붙여 배치 */}
+      <div className="flex flex-col items-center px-5 pt-4 pb-10 sm:pt-6 sm:pb-16 sm:px-8">
         <MultiStepFormV2 />
       </div>
     </main>
