@@ -1,6 +1,6 @@
 # NEXT_TASK.md — 다음 구현 과제
 
-> 마지막 업데이트: 2026-03-25
+> 마지막 업데이트: 2026-04-13
 
 ## 완료된 항목
 
@@ -26,22 +26,33 @@
 - [x] **Admin 인테리어공간 표시 수정** — 옛 취향/우선순위 → renovationAreas/renovationNote로 교체
 - [x] **이메일 알림** — 업체 승인/거절 시 업체 이메일, 견적 응답 시 고객 이메일 (Resend)
 - [x] **포트폴리오 상세 페이지** — GET API + 상세 페이지 컴포넌트 + PortfolioTab 상세보기 링크
+- [x] **광고 랜딩 배너 + 폼 개선** — AdLandingBanner, 마케팅 문서 추가
+- [x] **/form-v2 3스텝 폼** — 광고 유입 최적화 간소화 폼 (5스텝→3스텝, 이메일 선택, 공간유형 직선택)
+- [x] **Meta 광고 A/B 테스트 가이드** — `docs/meta-ab-test-optimization-guide.md` 작성
 
 ---
 
 ## 다음 구현 과제
 
-### P0 — 운영 필수 (설정 작업, 코드 아님)
+### P0 — 운영 필수
 
+- [ ] **Meta Pixel 설치** — Pixel ID 확보 후 코드에 설치. 전환 이벤트: ViewContent(폼 진입) + Lead(폼 제출)
+- [ ] **광고 랜딩 URL 변경** — `/form-v2?utm_source=instagram&utm_content=소재코드`로 변경
+- [ ] **A/B 테스트 설정** — `docs/meta-ab-test-optimization-guide.md` 참고
 - [ ] **Supabase 스키마 적용** — supabase/schema.sql 섹션 4~7을 Supabase SQL Editor에서 실행
 - [ ] **환경변수 설정** (.env.local + Vercel)
   - `COMPANY_SECRET` — 업체 토큰 서명용
   - `RESEND_API_KEY` — 이메일 발송용
   - `EMAIL_FROM` — 발신 이메일 (예: onboarding@resend.dev)
   - `NEXT_PUBLIC_SITE_URL` — 이메일 내 링크용
+  - `NEXT_PUBLIC_META_PIXEL_ID` — Meta Pixel 추적용
 
-### P1 — 핵심 UX
+### P1 — 핵심 UX (전환율 개선)
 
+- [ ] **폼 A/B 테스트** — `/form`(5스텝) vs `/form-v2`(3스텝) 전환율 비교 → 승자 확정
+- [ ] **Hero 광고 소재별 카피 분기** — utm_content 기반으로 Hero 헤드라인 동적 변경
+- [ ] **가상 후기 섹션 교체** — 실제 후기 확보 전까지 "이런 분들이 문의하세요" 형태로 대체
+- [ ] **"국내 최초" 문구 제거** — Header 배너에서 삭제, 사실 기반 혜택으로 교체
 - [ ] **업체 지역/분야 매칭** — 견적 요청의 지역/공간유형에 맞는 업체에게만 견적 요청 노출
 - [ ] **업체 프로필 공개 미리보기** — 업체 대시보드에서 고객에게 보이는 모습 미리보기
 
